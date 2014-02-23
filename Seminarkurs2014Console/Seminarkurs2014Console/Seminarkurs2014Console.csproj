@@ -45,6 +45,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ILogExtensions.cs" />
+    <Compile Include="model\AbstractObjectNode.cs" />
+    <Compile Include="model\DatapointValueNode.cs" />
+    <Compile Include="model\DatapointNode.cs" />
+    <Compile Include="model\DeviceNode.cs" />
+    <Compile Include="model\FolderNode.cs" />
+    <Compile Include="model\RootNode.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
