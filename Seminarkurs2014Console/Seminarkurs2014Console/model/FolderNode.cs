@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using Seminarkurs2014Console.database;
 
 namespace Seminarkurs2014Console.model {
 	/// <summary>
@@ -26,6 +27,21 @@ namespace Seminarkurs2014Console.model {
 		/// </summary>
 		public FolderNode () {
 			logger.Trace( String.Format( "Creating a '{0}' instance" , MethodBase.GetCurrentMethod().DeclaringType.Name ) );
+			this.SetType( NODE_TYPE );
+		}
+
+		/// <summary>
+		/// Constructor using a ObjectTreeRow for initialization
+		/// </summary>
+		public FolderNode ( ObjectTreeRow RootNodeRow ) {
+			logger.Trace( String.Format( "Creating a '{0}' instance" , MethodBase.GetCurrentMethod().DeclaringType.Name ) );
+			this.SetID( RootNodeRow.GetObjectID() );
+			this.SetParentID( RootNodeRow.GetObjectParentID() );
+			this.SetType( NODE_TYPE );
+			this.SetPath( RootNodeRow.GetObjectPath() );
+			this.SetName( RootNodeRow.GetObjectName() );
+			this.SetDescription( RootNodeRow.GetObjectDescription() );
+			this.SetLastUpdated( RootNodeRow.GetObjectLastUpdated() );
 		}
 
 		/// <summary>

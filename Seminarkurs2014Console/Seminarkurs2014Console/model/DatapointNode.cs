@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Seminarkurs2014Console.database;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -45,7 +46,7 @@ namespace Seminarkurs2014Console.model {
 		/// <summary>
 		/// Type of the datapoint (Integer, Floating-Point, Bool or Text)
 		/// </summary>
-		private Int32 Type;
+		private Int32 DatapointType;
 
 		/// <summary>
 		/// Unit of the datapoint
@@ -62,6 +63,24 @@ namespace Seminarkurs2014Console.model {
 		/// </summary>
 		public DatapointNode () {
 			logger.Trace( String.Format( "Creating a '{0}' instance" , MethodBase.GetCurrentMethod().DeclaringType.Name ) );
+			this.SetType( NODE_TYPE );
+		}
+
+		/// <summary>
+		/// Constructor using a ObjectTreeRow for initialization
+		/// </summary>
+		public DatapointNode ( ObjectTreeRow RootNodeRow ) {
+			logger.Trace( String.Format( "Creating a '{0}' instance" , MethodBase.GetCurrentMethod().DeclaringType.Name ) );
+			this.SetID( RootNodeRow.GetObjectID() );
+			this.SetParentID( RootNodeRow.GetObjectParentID() );
+			this.SetType( NODE_TYPE );
+			this.SetPath( RootNodeRow.GetObjectPath() );
+			this.SetName( RootNodeRow.GetObjectName() );
+			this.SetDescription( RootNodeRow.GetObjectDescription() );
+			this.SetLastUpdated( RootNodeRow.GetObjectLastUpdated() );
+			this.SetDatapointType( RootNodeRow.GetDatapointType() );
+			this.SetUnit( RootNodeRow.GetDatapointUnit() );
+			this.SetCalculation( RootNodeRow.GetDatapointCalculation() );
 		}
 
 		/// <summary>
@@ -73,8 +92,8 @@ namespace Seminarkurs2014Console.model {
 		/// Bool = 2
 		/// Text = 3
 		/// </param>
-		public void SetType ( Int32 Type ) {
-			this.Type = Type;		
+		public void SetDatapointType ( Int32 DatapointType ) {
+			this.DatapointType = DatapointType;		
 		}
 
 		/// <summary>
@@ -87,8 +106,8 @@ namespace Seminarkurs2014Console.model {
 		/// Bool = 2
 		/// Text = 3
 		/// </returns>
-		public Int32 GetType () {
-			return this.Type;
+		public Int32 GetDatapointType () {
+			return this.DatapointType;
 		}
 
 		/// <summary>

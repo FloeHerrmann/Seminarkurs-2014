@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Seminarkurs2014Console.database;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -42,6 +43,24 @@ namespace Seminarkurs2014Console.model {
 		/// </summary>
 		public DeviceNode () {
 			logger.Trace( String.Format( "Creating a '{0}' instance" , MethodBase.GetCurrentMethod().DeclaringType.Name ) );
+			this.SetType( NODE_TYPE );
+		}
+
+		/// <summary>
+		/// Constructor using a ObjectTreeRow for initialization
+		/// </summary>
+		public DeviceNode ( ObjectTreeRow RootNodeRow ) {
+			logger.Trace( String.Format( "Creating a '{0}' instance" , MethodBase.GetCurrentMethod().DeclaringType.Name ) );
+			this.SetID( RootNodeRow.GetObjectID() );
+			this.SetParentID( RootNodeRow.GetObjectParentID() );
+			this.SetType( NODE_TYPE );
+			this.SetPath( RootNodeRow.GetObjectPath() );
+			this.SetName( RootNodeRow.GetObjectName() );
+			this.SetDescription( RootNodeRow.GetObjectDescription() );
+			this.SetLastUpdated( RootNodeRow.GetObjectLastUpdated() );
+			this.SetIPAddress( RootNodeRow.GetDeviceIPAddress() );
+			this.SetPort( RootNodeRow.GetDevicePort() );
+			this.SetLastConnection( RootNodeRow.GetDeviceLastConnection() );
 		}
 
 		/// <summary>
