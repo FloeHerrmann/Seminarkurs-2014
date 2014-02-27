@@ -67,7 +67,7 @@ namespace Seminarkurs2014Console.database {
 		}
 
 		public DateTime GetObjectLastUpdated () {
-			return DateTime.Parse( ObjectData[ "OBJECT_LAST_UPDATED" ] );
+			return DateTime.ParseExact( ObjectData[ "OBJECT_LAST_UPDATED" ] , "dd.MM.yyyy HH:mm:ss" , null );
 		}
 
 		public IPAddress GetDeviceIPAddress () {
@@ -83,7 +83,8 @@ namespace Seminarkurs2014Console.database {
 		}
 
 		public DateTime GetDeviceLastConnection () {
-			return DateTime.Parse( ObjectData[ "SENSOR_LAST_CONNECTION" ] );
+			if( ObjectData[ "SENSOR_LAST_CONNECTION" ].Equals("") ) return new DateTime();
+			return DateTime.ParseExact( ObjectData[ "SENSOR_LAST_CONNECTION" ] , "dd.MM.yyyy HH:mm:ss" , null );
 		}
 
 		public Int32 GetDatapointType () {

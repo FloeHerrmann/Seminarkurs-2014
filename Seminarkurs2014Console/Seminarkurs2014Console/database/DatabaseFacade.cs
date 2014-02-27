@@ -53,5 +53,34 @@ namespace Seminarkurs2014Console.database {
 		public Boolean InsertNode ( DatapointNode Node ) {
 			return this.DatabaseConnector.InsertNode( Node );
 		}
+
+		public Boolean UpdateNode ( RootNode Node ) {
+			return this.DatabaseConnector.UpdateNode( Node );
+		}
+		public Boolean UpdateNode ( FolderNode Node ) {
+			return this.DatabaseConnector.UpdateNode( Node );
+		}
+		public Boolean UpdateNode ( DeviceNode Node ) {
+			return this.DatabaseConnector.UpdateNode( Node );
+		}
+		public Boolean UpdateNode ( DatapointNode Node ) {
+			return this.DatabaseConnector.UpdateNode( Node );
+		}
+
+		public Boolean DeleteNodeByID ( Int64 NodeID ) {
+			return this.DatabaseConnector.DeleteNodeByID( NodeID );
+		}
+		public Boolean DeleteNode ( RootNode Node ) {
+			return this.DatabaseConnector.DeleteNodeByID( Node.GetID() );
+		}
+		public Boolean DeleteNode ( FolderNode Node ) {
+			return this.DatabaseConnector.DeleteNodeByID( Node.GetID() );
+		}
+		public Boolean DeleteNode ( DeviceNode Node ) {
+			return this.DatabaseConnector.DeleteNodeByID( Node.GetID() );
+		}
+		public Boolean DeleteNode ( DatapointNode Node ) {
+			return this.DatabaseConnector.DeleteNodeByID( Node.GetID() );
+		}
 	}
 }

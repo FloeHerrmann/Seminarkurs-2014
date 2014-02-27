@@ -50,7 +50,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="database\DatabaseFacade.cs" />
-    <Compile Include="database\ExampleData.cs" />
     <Compile Include="database\IDatabaseConnector.cs" />
     <Compile Include="database\MySQLConnector.cs" />
     <Compile Include="database\ObjectTreeRow.cs" />

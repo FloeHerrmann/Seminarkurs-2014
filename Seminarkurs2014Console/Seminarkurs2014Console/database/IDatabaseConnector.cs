@@ -21,5 +21,16 @@ namespace Seminarkurs2014Console.database {
 		Boolean InsertNode ( DeviceNode Node );
 		Boolean InsertNode ( DatapointNode Node );
 
+		Boolean UpdateNode ( RootNode Node );
+		Boolean UpdateNode ( FolderNode Node );
+		Boolean UpdateNode ( DeviceNode Node );
+		Boolean UpdateNode ( DatapointNode Node );
+
+		Boolean DeleteNodeByID ( Int64 NodeID );
+		Boolean DeleteNode ( RootNode Node );
+		Boolean DeleteNode ( FolderNode Node );
+		Boolean DeleteNode ( DeviceNode Node );
+		Boolean DeleteNode ( DatapointNode Node );
+
 	}
 }
