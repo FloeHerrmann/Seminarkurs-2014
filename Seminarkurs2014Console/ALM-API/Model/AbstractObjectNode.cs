@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Seminarkurs2014Console.model {
+namespace Gsmgh.Alm.Model {
 	/// <summary>
 	/// Abstrakte Klasse für die meisten nodes
 	/// </summary>

@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Seminarkurs2014Console.model;
+using Gsmgh.Alm.Model;
 
-namespace Seminarkurs2014Console.database {
+namespace Gsmgh.Alm.Database {
 	public class DatabaseFacade {
 
 		private IDatabaseConnector DatabaseConnector;

@@ -6,21 +6,11 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Seminarkurs2014Console.model {
+namespace Gsmgh.Alm.Model {
 	/// <summary>
 	/// Model for a datapoint node
 	/// </summary>
 	public class DatapointValueNode {
-
-		/// <summary>
-		/// Log4net logger instance for logging purposes
-		/// </summary>
-		private static readonly log4net.ILog logger = log4net.LogManager.GetLogger( System.Reflection.MethodBase.GetCurrentMethod().DeclaringType );
-
-		/// <summary>
-		/// Number of the datapoint node type [5]
-		/// </summary>
-		public static Int32 NODE_TYPE = 5;
 
 		/// <summary>
 		/// Timestamp of the datapoint value
@@ -51,13 +41,6 @@ namespace Seminarkurs2014Console.model {
 		/// Interger value
 		/// </summary>
 		private String StringValue;
-
-		/// <summary>
-		/// Constructor
-		/// </summary>
-		public DatapointValueNode () {
-			logger.Trace( String.Format( "Creating a '{0}' instance" , MethodBase.GetCurrentMethod().DeclaringType.Name ) );
-		}
 
 		/// <summary>
 		/// Set the Timestamp of the datapoint value

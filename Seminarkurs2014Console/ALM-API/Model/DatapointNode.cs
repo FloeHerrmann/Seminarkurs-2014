@@ -1,22 +1,17 @@
-﻿using Seminarkurs2014Console.database;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using Gsmgh.Alm.Database;
 
-namespace Seminarkurs2014Console.model {
+namespace Gsmgh.Alm.Model {
 	/// <summary>
 	/// Model for a datapoint node
 	/// </summary>
 	public class DatapointNode : AbstractObjectNode {
-
-		/// <summary>
-		/// Log4net logger instance for logging purposes
-		/// </summary>
-		private static readonly log4net.ILog logger = log4net.LogManager.GetLogger( System.Reflection.MethodBase.GetCurrentMethod().DeclaringType );
 
 		/// <summary>
 		/// Number of the datapoint node type [4]
@@ -62,7 +57,6 @@ namespace Seminarkurs2014Console.model {
 		/// Constructor
 		/// </summary>
 		public DatapointNode () {
-			logger.Trace( String.Format( "Creating a '{0}' instance" , MethodBase.GetCurrentMethod().DeclaringType.Name ) );
 			this.SetType( NODE_TYPE );
 		}
 
@@ -70,7 +64,6 @@ namespace Seminarkurs2014Console.model {
 		/// Constructor using a ObjectTreeRow for initialization
 		/// </summary>
 		public DatapointNode ( ObjectTreeRow RootNodeRow ) {
-			logger.Trace( String.Format( "Creating a '{0}' instance" , MethodBase.GetCurrentMethod().DeclaringType.Name ) );
 			this.SetID( RootNodeRow.GetObjectID() );
 			this.SetParentID( RootNodeRow.GetObjectParentID() );
 			this.SetType( NODE_TYPE );

@@ -5,17 +5,29 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Seminarkurs2014Console.database {
+namespace Gsmgh.Alm.Database {
 	public class ObjectTreeRow {
 
+		/// <summary>
+		///		Column names of the object_tree table
+		/// </summary>
 		String[] ValueKeys = { 
 			"OBJECT_ID" , "OBJECT_PARENT_ID" , "OBJECT_TYPE" , "OBJECT_PATH" , "OBJECT_NAME" , "OBJECT_DESCRIPTION" , "OBJECT_LAST_UPDATED" ,
 			"SENSOR_IP_ADDRESS" , "SENSOR_PORT" , "SENSOR_LAST_CONNECTION" ,
 			"DATAPOINT_TYPE" , "DATAPOINT_UNIT" , "DATAPOINT_CALCULATION"
 		};
 
+		/// <summary>
+		///		Dictionary with column name as key and a string value
+		/// </summary>
 		public Dictionary<String , String> ObjectData = new Dictionary<String , String>();
 
+		/// <summary>
+		///		Constructor
+		/// </summary>
+		/// <param name="ObjectRow">
+		///		A ',' delimted string with all column values of the object_tree table
+		/// </param>
 		public ObjectTreeRow ( String ObjectRow ) {
 			String[] ObjectValues = ObjectRow.Split( ',' );
 			if( ObjectValues.Length >= ValueKeys.Length ) {
@@ -26,7 +38,7 @@ namespace Seminarkurs2014Console.database {
 					);
 				}
 			} else {
-				throw new Exception( "Anzahl der Werte != Anzahl der Schlüssel" );
+				throw new Exception( "Amount of values != Amount of keys" );
 			}
 		}
 

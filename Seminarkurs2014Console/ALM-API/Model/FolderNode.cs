@@ -4,18 +4,13 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using Seminarkurs2014Console.database;
+using Gsmgh.Alm.Database;
 
-namespace Seminarkurs2014Console.model {
+namespace Gsmgh.Alm.Model {
 	/// <summary>
 	/// Model for the folder node
 	/// </summary>
 	public class FolderNode : AbstractObjectNode {
-
-		/// <summary>
-		/// Log4net logger instance for logging purposes
-		/// </summary>
-		private static readonly log4net.ILog logger = log4net.LogManager.GetLogger( System.Reflection.MethodBase.GetCurrentMethod().DeclaringType );
 
 		/// <summary>
 		/// Number of the folder node type [2]
@@ -26,7 +21,6 @@ namespace Seminarkurs2014Console.model {
 		/// Constructor
 		/// </summary>
 		public FolderNode () {
-			logger.Trace( String.Format( "Creating a '{0}' instance" , MethodBase.GetCurrentMethod().DeclaringType.Name ) );
 			this.SetType( NODE_TYPE );
 		}
 
@@ -34,7 +28,6 @@ namespace Seminarkurs2014Console.model {
 		/// Constructor using a ObjectTreeRow for initialization
 		/// </summary>
 		public FolderNode ( ObjectTreeRow RootNodeRow ) {
-			logger.Trace( String.Format( "Creating a '{0}' instance" , MethodBase.GetCurrentMethod().DeclaringType.Name ) );
 			this.SetID( RootNodeRow.GetObjectID() );
 			this.SetParentID( RootNodeRow.GetObjectParentID() );
 			this.SetType( NODE_TYPE );
