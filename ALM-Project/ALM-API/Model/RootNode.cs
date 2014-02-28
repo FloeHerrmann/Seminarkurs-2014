@@ -30,7 +30,7 @@ namespace Gsmgh.Alm.Model {
 		public RootNode ( ObjectTreeRow RootNodeRow ) {
 			this.SetID( RootNodeRow.GetObjectID() );
 			this.SetParentID( RootNodeRow.GetObjectParentID() );
-			this.SetType( NODE_TYPE );
+			this.SetType( RootNodeRow.GetObjectType() );
 			this.SetPath( RootNodeRow.GetObjectPath() );
 			this.SetName( RootNodeRow.GetObjectName() );
 			this.SetDescription( RootNodeRow.GetObjectDescription() );

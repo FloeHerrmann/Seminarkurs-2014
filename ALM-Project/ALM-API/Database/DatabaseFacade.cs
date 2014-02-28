@@ -82,5 +82,25 @@ namespace Gsmgh.Alm.Database {
 		public Boolean DeleteNode ( DatapointNode Node ) {
 			return this.DatabaseConnector.DeleteNodeByID( Node.GetID() );
 		}
+
+		/// <summary>
+		///		Creates a dictionary that contains all subnodes for a specific parent id
+		/// </summary>
+		/// <returns>
+		///		A dictionary that contains all subnodes for a specific parent ids
+		/// </returns>
+		public Dictionary<String , List<AbstractObjectNode>> GetObjectTreeSortedByParentID () {
+			Dictionary<String , List<AbstractObjectNode>> parentIdDictionary = new Dictionary<string , List<AbstractObjectNode>>();
+			List<AbstractObjectNode> abstractNodeList = this.DatabaseConnector.GetAllAbstractNodes();
+
+			foreach( AbstractObjectNode currentNode in abstractNodeList ) {
+				if( !parentIdDictionary.ContainsKey( currentNode.GetParentID().ToString() ) ) {
+					parentIdDictionary.Add( currentNode.GetParentID().ToString() , new List<AbstractObjectNode>() );
+				}
+				parentIdDictionary[ currentNode.GetParentID().ToString() ].Add( currentNode );
+			}
+
+			return parentIdDictionary;
+		}
 	}
 }

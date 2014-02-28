@@ -10,13 +10,15 @@ using Gsmgh.Alm.Model;
 namespace Seminarkurs2014Console {
 	class Program {
 
+		// Create a DatabaseFacade instance
+		public static DatabaseFacade database = new DatabaseFacade();
+
 		static void Main ( string[] args ) {
 
 			Console.WriteLine( "- - - - - - - - - - - - - - - - " );
 			Console.WriteLine( "Seminarkurs 2014 Konsolenanwendung" );
 
-			// Create a DatabaseFacade instance
-			DatabaseFacade database = new DatabaseFacade();
+			Boolean insertPersistentExampleData = false;
 
 			// Tell the DatabseFacade to use the MySQLConnector
 			database.SetDatabaseConnector(
@@ -47,7 +49,7 @@ namespace Seminarkurs2014Console {
 			FolderNode folderNode01 = new FolderNode();
 			folderNode01.SetParentID( rootNode.GetID() );
 			folderNode01.SetPath( rootNode.GetID().ToString() );
-			folderNode01.SetName( "0. Erdgeschoss" );
+			folderNode01.SetName( "Erdgeschoss" );
 			folderNode01.SetDescription( "Alle Sensoren im Erdgeschoss" );
 			folderNode01.SetLastUpdated( DateTime.Now );
 
@@ -89,7 +91,7 @@ namespace Seminarkurs2014Console {
 
 			// Create a DatapointNode instance
 			DatapointNode datapointNode01 = new DatapointNode();
-			datapointNode01.SetParentID( deviceNode01.GetParentID() );
+			datapointNode01.SetParentID( deviceNode01.GetID() );
 			datapointNode01.SetPath( deviceNode01.GetPath() + "/" + datapointNode01.GetID() );
 			datapointNode01.SetName( "Sauerstoff" );
 			datapointNode01.SetDescription( "CO2 gehalt in ppm" );
@@ -105,7 +107,7 @@ namespace Seminarkurs2014Console {
 
 			// Create a DatapointNode instance
 			DatapointNode datapointNode02 = new DatapointNode();
-			datapointNode02.SetParentID( deviceNode01.GetParentID() );
+			datapointNode02.SetParentID( deviceNode01.GetID() );
 			datapointNode02.SetPath( deviceNode01.GetPath() + "/" + deviceNode01.GetID() );
 			datapointNode02.SetName( "Lautstärke" );
 			datapointNode02.SetDescription( "Lautstärke in db" );
@@ -244,7 +246,7 @@ namespace Seminarkurs2014Console {
 
 			// - - - - - - - - - - - - - - - - - D E L E T E - - - - - - - - - - - - - - - - -
 			Console.WriteLine( "- - - - - - - - - - - - - - - - - D E L E T E - - - - - - - - - - - - - - - - -" );
-
+			
 			// Update RootNode
 			Console.Write( String.Format( "Delete RootNode with ID '{0}'..." , rootNode.GetID() ) );
 			Boolean deleted = database.DeleteNode( rootNode );
@@ -320,6 +322,24 @@ namespace Seminarkurs2014Console {
 			if( datapointNode02Select != null ) Console.WriteLine( String.Format( "OK: {0}" , datapointNode02Select.ToString() ) );
 			else Console.WriteLine( "FAILED" );
 
+			if( insertPersistentExampleData == true ) {
+				RootNode tempRootNode = InsertRootNode( "GSMGH" , "Gewerbliche Schule Bad Mergentheim" , 0 );
+				FolderNode tempFolderNode = InsertFolderNode( "Erdgeschoss" , "Alle Sensoren im Erdgeschoss" , tempRootNode.GetID() );
+				InsertDeviceNode( "Raum 140" , "Sensor im Raum 040" , tempFolderNode.GetID() , new IPAddress( new Byte[] { 192 , 168 , 5 , 12 } ) , 10001 );
+				InsertDeviceNode( "Raum 141" , "Sensor im Raum 041" , tempFolderNode.GetID() , new IPAddress( new Byte[] { 192 , 168 , 5 , 13 } ) , 10001 );
+				tempFolderNode = InsertFolderNode( "1.Stock" , "Alle Sensoren im 1. Stock" , tempRootNode.GetID() );
+				FolderNode tempSubFolderNode = InsertFolderNode( "Links" , "Alle Sensoren in der linken Hälfte" , tempFolderNode.GetID() );
+				InsertDeviceNode( "Raum 140" , "Sensor im Raum 140" , tempSubFolderNode.GetID() , new IPAddress( new Byte[] { 192 , 168 , 5 , 12 } ) , 10001 );
+				InsertDeviceNode( "Raum 141" , "Sensor im Raum 141" , tempSubFolderNode.GetID() , new IPAddress( new Byte[] { 192 , 168 , 5 , 13 } ) , 10001 );
+				tempSubFolderNode = InsertFolderNode( "Rechts" , "Alle Sensoren in der rechten Hälfte" , tempFolderNode.GetID() );
+				InsertDeviceNode( "Raum 140" , "Sensor im Raum 140" , tempSubFolderNode.GetID() , new IPAddress( new Byte[] { 192 , 168 , 5 , 14 } ) , 10001 );
+				InsertDeviceNode( "Raum 141" , "Sensor im Raum 141" , tempSubFolderNode.GetID() , new IPAddress( new Byte[] { 192 , 168 , 5 , 15 } ) , 10001 );
+				tempFolderNode = InsertFolderNode( "2. Stock" , "Alle Sensoren im 2. Stock" , tempRootNode.GetID() );
+				InsertDeviceNode( "Raum 240" , "Sensor im Raum 040" , tempFolderNode.GetID() , new IPAddress( new Byte[] { 192 , 168 , 5 , 16 } ) , 10001 );
+				InsertDeviceNode( "Raum 241" , "Sensor im Raum 041" , tempFolderNode.GetID() , new IPAddress( new Byte[] { 192 , 168 , 5 , 17 } ) , 10001 );
+				InsertDeviceNode( "Raum 242" , "Sensor im Raum 040" , tempFolderNode.GetID() , new IPAddress( new Byte[] { 192 , 168 , 5 , 18 } ) , 10001 );
+				InsertDeviceNode( "Raum 243" , "Sensor im Raum 041" , tempFolderNode.GetID() , new IPAddress( new Byte[] { 192 , 168 , 5 , 19 } ) , 10001 );
+			}
 			// Close connection to the datbase
 			Console.Write( "Close the connection to the database..." );
 			database.CloseConnection();
@@ -327,6 +347,78 @@ namespace Seminarkurs2014Console {
 
 			Console.ReadKey();
 
+		}
+
+		static RootNode InsertRootNode ( String Name , String Description , Int64 ParentID ) {
+			RootNode node = new RootNode();
+			node.SetParentID( ParentID );
+			node.SetPath( "" );
+			node.SetName( Name );
+			node.SetDescription( Description );
+			node.SetLastUpdated( DateTime.Now );
+
+			// Save the FolderNode instance
+			Console.Write( String.Format( "Save {0}..." , node.ToString() ) );
+			Boolean inserted = database.InsertNode( node );
+			if( inserted ) Console.WriteLine( "OK" );
+			else Console.WriteLine( "FAILED" );
+			return node;
+		}
+		static FolderNode InsertFolderNode ( String Name , String Description , Int64 ParentID ) {
+			// Create a FolderNode instance
+			FolderNode node = new FolderNode();
+			node.SetParentID( ParentID );
+			node.SetPath( "" );
+			node.SetName( Name );
+			node.SetDescription( Description );
+			node.SetLastUpdated( DateTime.Now );
+
+			// Save the FolderNode instance
+			Console.Write( String.Format( "Save {0}..." , node.ToString() ) );
+			Boolean inserted = database.InsertNode( node );
+			if( inserted ) Console.WriteLine( "OK" );
+			else Console.WriteLine( "FAILED" );
+			return node;
+		}
+		static DeviceNode InsertDeviceNode ( String Name , String Description , Int64 ParentID , IPAddress IpAddress , Int32 Port ) {
+			// Create a FolderNode instance
+			DeviceNode node = new DeviceNode();
+			node.SetParentID( ParentID );
+			node.SetPath( "" );
+			node.SetName( Name );
+			node.SetDescription( Description );
+			node.SetLastUpdated( DateTime.Now );
+			node.SetIPAddress( IpAddress );
+			node.SetPort( Port );
+
+			// Save the FolderNode instance
+			Console.Write( String.Format( "Save {0}..." , node.ToString() ) );
+			Boolean inserted = database.InsertNode( node );
+			if( inserted ) Console.WriteLine( "OK" );
+			else Console.WriteLine( "FAILED" );
+
+			InsertDatapointNode( "Sauerstoff" , "Sauerstoffgehalt" , node.GetID() , DatapointNode.TYPE_FLOATING_POINT , "ppm" );
+			InsertDatapointNode( "Lautstärke" , "Lautstärke" , node.GetID() , DatapointNode.TYPE_INTEGER , "db" );
+
+			return node;
+		}
+		static DatapointNode InsertDatapointNode ( String Name , String Description , Int64 ParentID , Int32 Type , String Unit ) {
+			// Create a FolderNode instance
+			DatapointNode node = new DatapointNode();
+			node.SetParentID( ParentID );
+			node.SetPath( "" );
+			node.SetName( Name );
+			node.SetDescription( Description );
+			node.SetLastUpdated( DateTime.Now );
+			node.SetDatapointType( Type );
+			node.SetUnit( Unit );
+
+			// Save the FolderNode instance
+			Console.Write( String.Format( "Save {0}..." , node.ToString() ) );
+			Boolean inserted = database.InsertNode( node );
+			if( inserted ) Console.WriteLine( "OK" );
+			else Console.WriteLine( "FAILED" );
+			return node;
 		}
 	}
 }

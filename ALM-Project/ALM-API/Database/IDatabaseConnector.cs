@@ -32,5 +32,7 @@ namespace Gsmgh.Alm.Database {
 		Boolean DeleteNode ( DeviceNode Node );
 		Boolean DeleteNode ( DatapointNode Node );
 
+		List<AbstractObjectNode> GetAllAbstractNodes ();
+
 	}
 }

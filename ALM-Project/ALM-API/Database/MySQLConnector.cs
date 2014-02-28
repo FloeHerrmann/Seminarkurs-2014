@@ -568,5 +568,43 @@ namespace Gsmgh.Alm.Database {
 			return this.DeleteNodeByID( Node.GetID() );
 		}
 
+		public List<AbstractObjectNode> GetAllAbstractNodes () {
+			// A list of all nodes in the database
+			List<AbstractObjectNode> nodeList = new List<AbstractObjectNode>();
+
+			// Command that will be send to the databse
+			MySqlCommand Command = this.Connection.CreateCommand();
+
+			// Reader to read the database answer
+			MySqlDataReader Reader;
+
+			// Get the row (tuple) from the datbase with a specific id
+			// SELECT *					> Get all columns of the table
+			// FROM object_tree			> Target table object_tree
+			// WHERE object_id = {0}	> Get all rows where the column object_id matches the given id
+			// LIMIT 1					> Because the id is unique we can limit it to 1 row
+			Command.CommandText = "SELECT * FROM object_tree";
+			Command.Connection = this.Connection;
+
+			// Represents a row (tuple) of the object_tree table
+			ObjectTreeRow NodeRow = null;
+
+			// Execute the command and read the answer
+			Reader = Command.ExecuteReader();
+
+			// Read the answer
+			while( Reader.Read() ) {
+				string row = "";
+				for( int i = 0 ; i < ( Reader.FieldCount - 1 ) ; i++ )
+					row += Reader.GetValue( i ).ToString() + ",";
+				// RootNode = AbstracObjectNode
+				nodeList.Add( new RootNode( new ObjectTreeRow( row ) ) );
+			}
+			Reader.Close();
+
+			// Return the list with all nodes
+			return nodeList;
+		}
+
 	}
 }
