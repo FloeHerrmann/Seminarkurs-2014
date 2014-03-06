@@ -94,6 +94,8 @@ namespace Seminarkurs2014Console {
 			datapointNode01.SetLastUpdated( DateTime.Now );
 			datapointNode01.SetDatapointType( DatapointNode.TYPE_FLOATING_POINT );
 			datapointNode01.SetUnit( "ppm" );
+			datapointNode01.SetLastValue( "0.50" );
+			datapointNode01.SetLastValueUpdate( DateTime.Now );
 
 			// Save the DatapointNode instance
 			Console.Write( String.Format( "Save {0}..." , rootNode.ToString() ) );
@@ -109,6 +111,8 @@ namespace Seminarkurs2014Console {
 			datapointNode02.SetLastUpdated( DateTime.Now );
 			datapointNode02.SetDatapointType( DatapointNode.TYPE_INTEGER );
 			datapointNode02.SetUnit( "db" );
+			datapointNode02.SetLastValue( "90" );
+			datapointNode02.SetLastValueUpdate( DateTime.Now );
 
 			// Save the DatapointNode instance
 			Console.Write( String.Format( "Save {0}..." , datapointNode02.ToString() ) );
@@ -403,6 +407,9 @@ namespace Seminarkurs2014Console {
 			node.SetLastUpdated( DateTime.Now );
 			node.SetDatapointType( Type );
 			node.SetUnit( Unit );
+			Random random = new Random();
+			node.SetLastValue( random.Next( 40 , 100 ).ToString() );
+			node.SetLastValueUpdate( DateTime.Now );
 
 			// Save the FolderNode instance
 			Console.Write( String.Format( "Save {0}..." , node.ToString() ) );

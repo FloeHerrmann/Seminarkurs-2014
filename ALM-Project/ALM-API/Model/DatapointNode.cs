@@ -49,6 +49,16 @@ namespace Gsmgh.Alm.Model {
 		private String Unit;
 
 		/// <summary>
+		/// Last value of the datapoint
+		/// </summary>
+		private String LastValue;
+
+		/// <summary>
+		/// Update of the last value of the datapoint
+		/// </summary>
+		private DateTime LastValueUpdate;
+
+		/// <summary>
 		/// Constructor
 		/// </summary>
 		public DatapointNode () {
@@ -67,6 +77,8 @@ namespace Gsmgh.Alm.Model {
 			this.SetLastUpdated( RootNodeRow.GetObjectLastUpdated() );
 			this.SetDatapointType( RootNodeRow.GetDatapointType() );
 			this.SetUnit( RootNodeRow.GetDatapointUnit() );
+			this.SetLastValue( RootNodeRow.GetDatapointLastValue() );
+			this.SetLastValueUpdate( RootNodeRow.GetDatapointLastUpdated() );
 		}
 
 		/// <summary>
@@ -112,17 +124,33 @@ namespace Gsmgh.Alm.Model {
 			return this.Unit;
 		}
 
+		public void SetLastValue ( String Value ) {
+			this.LastValue = Value;
+		}
+		public String GetLastValue () {
+			return this.LastValue;
+		}
+
+		public void SetLastValueUpdate ( DateTime date ) {
+			this.LastValueUpdate = date;
+		}
+		public DateTime GetLastValueUpdate () {
+			return this.LastValueUpdate;
+		}
+
 		/// <summary>
 		/// Gibt diese Implementierung vom Typ System.String zurück
 		/// </summary>
 		public override String ToString () {
-			return String.Format( "DatapointNode({0}/{1}/{2}/{3})({4}/{5})" ,
+			return String.Format( "DatapointNode({0}/{1}/{2}/{3})({4}/{5}/{6}/{7})" ,
 				this.GetID() ,
 				this.GetParentID() ,
 				this.GetName() ,
 				this.GetDescription(),
 				this.GetType(),
-				this.GetUnit()
+				this.GetUnit(),
+				this.GetLastValue(),
+				this.GetLastValueUpdate()
 			);
 		}
 

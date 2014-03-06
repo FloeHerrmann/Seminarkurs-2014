@@ -14,7 +14,7 @@ namespace Gsmgh.Alm.Database {
 		String[] ValueKeys = { 
 			"OBJECT_ID" , "OBJECT_PARENT_ID" , "OBJECT_TYPE" ,  "OBJECT_NAME" , "OBJECT_DESCRIPTION" , "OBJECT_LAST_UPDATED" ,
 			"SENSOR_IP_ADDRESS" , "SENSOR_PORT" , "SENSOR_LAST_CONNECTION" ,
-			"DATAPOINT_TYPE" , "DATAPOINT_UNIT"
+			"DATAPOINT_TYPE" , "DATAPOINT_UNIT" , "DATAPOINT_LAST_VALUE" , "DATAPOINT_LAST_UPDATED"
 		};
 
 		/// <summary>
@@ -105,6 +105,15 @@ namespace Gsmgh.Alm.Database {
 
 		public String GetDatapointUnit () {
 			return ObjectData[ "DATAPOINT_UNIT" ];
+		}
+
+		public String GetDatapointLastValue () {
+			return ObjectData[ "DATAPOINT_LAST_VALUE" ];
+		}
+
+		public DateTime GetDatapointLastUpdated () {
+			if( ObjectData[ "DATAPOINT_LAST_UPDATED" ].Equals("") ) return new DateTime();
+			return DateTime.ParseExact( ObjectData[ "DATAPOINT_LAST_UPDATED" ] , "dd.MM.yyyy HH:mm:ss" , null );
 		}
 
 	}

@@ -121,9 +121,9 @@ namespace Gsmgh.Alm.Database {
 			// Read the answer
 			while( Reader.Read() ) {
 				string row = "";
-				for( int i = 0 ; i < ( Reader.FieldCount - 1 ) ; i++ )
+				for( int i = 0 ; i < ( Reader.FieldCount ) ; i++ )
 					row += Reader.GetValue( i ).ToString() + ",";
-				NodeRow = new ObjectTreeRow( row );
+				NodeRow = new ObjectTreeRow( row.Substring( 0 , row.Length - 1) );
 			}
 			Reader.Close();
 
@@ -323,8 +323,8 @@ namespace Gsmgh.Alm.Database {
 			//		[colum name] = [value]	> Set a column to the given value
 			// WHERE object_id = {0}		> Update all rows where the column object_id matches the given id
 			Command.CommandText = String.Format(
-				"INSERT INTO object_tree ( object_parent_id , object_type ,  object_name , object_description , object_last_updated , datapoint_type , datapoint_unit ) Values( {0} , {1} , '{2}' , '{3}' , '{4}' , '{5}' , '{6}' )" ,
-				Node.GetParentID() , DatapointNode.NODE_TYPE , Node.GetName() , Node.GetDescription() , Node.GetLastUpdated().ToString( "yyyy-MM-dd HH:mm:ss" ) , Node.GetDatapointType().ToString() , Node.GetUnit()
+				"INSERT INTO object_tree ( object_parent_id , object_type ,  object_name , object_description , object_last_updated , datapoint_type , datapoint_unit , datapoint_last_value , datapoint_last_updated ) Values( {0} , {1} , '{2}' , '{3}' , '{4}' , '{5}' , '{6}' , '{7}' , '{8}' )" ,
+				Node.GetParentID() , DatapointNode.NODE_TYPE , Node.GetName() , Node.GetDescription() , Node.GetLastUpdated().ToString( "yyyy-MM-dd HH:mm:ss" ) , Node.GetDatapointType().ToString() , Node.GetUnit() , Node.GetLastValue() , Node.GetLastValueUpdate().ToString( "yyyy-MM-dd HH:mm:ss" )
 			);
 			Command.Connection = this.Connection;
 
@@ -466,8 +466,8 @@ namespace Gsmgh.Alm.Database {
 			//		[colum name] = [value]	> Set a column to the given value
 			// WHERE object_id = {0}		> Update all rows where the column object_id matches the given id
 			Command.CommandText = String.Format(
-				"UPDATE object_tree SET object_parent_id={0}, object_name='{1}', object_description='{2}', object_last_updated='{3}', datapoint_type={4}, datapoint_unit='{5}' WHERE object_id={6}" ,
-				Node.GetParentID() , Node.GetName() , Node.GetDescription() , DateTime.Now.ToString( "yyyy-MM-dd HH:mm:ss" ) , Node.GetDatapointType() , Node.GetUnit() , Node.GetID()
+				"UPDATE object_tree SET object_parent_id={0}, object_name='{1}', object_description='{2}', object_last_updated='{3}', datapoint_type={4}, datapoint_unit='{5}', datapoint_last_value='{6}', datapoint_last_updated='{7}' WHERE object_id={8}" ,
+				Node.GetParentID() , Node.GetName() , Node.GetDescription() , DateTime.Now.ToString( "yyyy-MM-dd HH:mm:ss" ) , Node.GetDatapointType() , Node.GetUnit() , Node.GetLastValue() , Node.GetLastValueUpdate().ToString( "yyyy-MM-dd HH:mm:ss" ) , Node.GetID() 
 			);
 			Command.Connection = this.Connection;
 

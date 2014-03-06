@@ -9,14 +9,21 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Gsmgh.Alm.Database;
 using Gsmgh.Alm.Model;
+using ALM_Interface.UserControls;
 
 namespace ALM_Interface {
 	public partial class mainWindow : Form {
 
 		private Dictionary<String , List<AbstractObjectNode>> parentIdDictionary;
 
+		DatabaseFacade database;
+
 		private Int32 MinTreeWidth = 180;
 		private Int32 CurrentTreeWidth = 0;
+
+		private FolderControl FolderControl;
+		private DeviceControl DeviceControl;
+		private DatapointControl DatapointControl;
 
 		public mainWindow () {
 			InitializeComponent();
@@ -28,77 +35,94 @@ namespace ALM_Interface {
 			nodeTreeImageList.Images.Add( Properties.Resources.DeviceNodeIcon );
 			nodeTreeImageList.Images.Add( Properties.Resources.DatapointNodeIcon );
 
-			nodeTreeView.ImageList = nodeTreeImageList;
+			NodeTreeView.ImageList = nodeTreeImageList;
 
 			// Create a DatabaseFacade instance
-			DatabaseFacade database = new DatabaseFacade();
+			this.database = new DatabaseFacade();
 
 			// Tell the DatabseFacade to use the MySQLConnector
-			database.SetDatabaseConnector(
+			this.database.SetDatabaseConnector(
 				new MySQLConnector( "SERVER=localhost;DATABASE=seminarkurs2014;UID=root;PASSWORD=root;" )
 			);
 
 			// Open a connection to the datbase
-			database.OpenConnection();
+			this.database.OpenConnection();
 
 			parentIdDictionary = database.GetObjectTreeSortedByParentID();
-			populateTreeView();
-			nodeTreeView.Nodes[ 0 ].Expand();
+			PopulateTreeView();
+			NodeTreeView.Nodes[ 0 ].Expand();
 
-			database.CloseConnection();
+			this.database.CloseConnection();
 
+			this.FolderControl = new FolderControl();
+			this.FolderControl.Dock = DockStyle.Fill;
+			ContentPanel.Controls.Add( this.FolderControl );
+
+			this.DeviceControl = new DeviceControl();
+			this.DeviceControl.Dock = DockStyle.Fill;
+			ContentPanel.Controls.Add( this.DeviceControl );
+
+			this.DatapointControl = new DatapointControl();
+			this.DatapointControl.Dock = DockStyle.Fill;
+			ContentPanel.Controls.Add( this.DatapointControl );
+
+			ContentPanel.Controls[ 0 ].Visible = true;
+			ContentPanel.Controls[ 1 ].Visible = false;
+			ContentPanel.Controls[ 2 ].Visible = false;
 		}
 
-		private void populateTreeView ( ) {
+		private void PopulateTreeView ( ) {
 			AbstractObjectNode rootNode = this.parentIdDictionary[ "0" ].ElementAt( 0 );
 			TreeNode rootTreeNode = new TreeNode();
+			rootTreeNode.Name = rootNode.GetID().ToString();
 			rootTreeNode.Text = rootNode.GetName();
 			rootTreeNode.ImageIndex = rootNode.GetType();
 			rootTreeNode.SelectedImageIndex = rootNode.GetType();
 			rootTreeNode.ToolTipText = rootNode.GetDescription();
-			addNodesToNode( rootNode.GetID() , rootTreeNode );
-			nodeTreeView.Nodes.Add( rootTreeNode );
+			AddNodesToNode( rootNode.GetID() , rootTreeNode );
+			NodeTreeView.Nodes.Add( rootTreeNode );
 		}
 
-		private void addNodesToNode( Int64 parentID , TreeNode parentNode ) {
+		private void AddNodesToNode( Int64 parentID , TreeNode parentNode ) {
 			if( this.parentIdDictionary.ContainsKey( parentID.ToString() ) ) {
 				List<AbstractObjectNode> subNodes = this.parentIdDictionary[ parentID.ToString() ];
 				foreach( AbstractObjectNode currentSubNode in subNodes ) {
 					TreeNode subNode = new TreeNode();
+					subNode.Name = currentSubNode.GetID().ToString();
 					subNode.Text = currentSubNode.GetName();
 					subNode.ImageIndex = currentSubNode.GetType();
 					subNode.SelectedImageIndex = currentSubNode.GetType();
 					subNode.ToolTipText = currentSubNode.GetDescription();
-					addNodesToNode( currentSubNode.GetID() , subNode );
+					AddNodesToNode( currentSubNode.GetID() , subNode );
 					parentNode.Nodes.Add( subNode );
 				}
 			}
 		}
 
-		private void nodeTreeViewAfterExpand ( object sender , TreeViewEventArgs e ) {
-			int CurrentTreeWidth = nodeTreeView.ClientSize.Width;
+		private void NodeTreeViewAfterExpand ( object sender , TreeViewEventArgs e ) {
+			int CurrentTreeWidth = NodeTreeView.ClientSize.Width;
 			if( e.Node.Nodes != null ) {
 				foreach( TreeNode node in e.Node.Nodes ) {
 					CurrentTreeWidth = Math.Max( CurrentTreeWidth , node.Bounds.Right );
 				}
 			}
 			if( ( this.CurrentTreeWidth + 14 ) < this.MinTreeWidth ) this.CurrentTreeWidth = this.MinTreeWidth; 
-			nodeTreeView.Width = this.CurrentTreeWidth;
+			NodeTreeView.Width = this.CurrentTreeWidth;
 			//nodeTreeView.ClientSize = new Size( maxRight , nodeTreeView.ClientSize.Height );
 		}
 
-		private void nodeTreeViewAfterCollapse ( object sender , TreeViewEventArgs e ) {
-			getWidthForNode( nodeTreeView.Nodes[ 0 ] );
+		private void NodeTreeViewAfterCollapse ( object sender , TreeViewEventArgs e ) {
+			GetWidthForNode( NodeTreeView.Nodes[ 0 ] );
 			if( this.CurrentTreeWidth < 130 ) this.CurrentTreeWidth = 130;
-			nodeTreeView.Width = this.CurrentTreeWidth;
+			NodeTreeView.Width = this.CurrentTreeWidth;
 			//nodeTreeView.ClientSize = new Size( this.CurrentTreeWidth , nodeTreeView.ClientSize.Height );
 		}
 
-		private void getWidthForNode ( TreeNode node ) {
+		private void GetWidthForNode ( TreeNode node ) {
 			if( node.IsExpanded ) {
 				if( node.Nodes != null ) {
 					foreach( TreeNode currentNode in node.Nodes ) {
-						getWidthForNode( currentNode );
+						GetWidthForNode( currentNode );
 					}
 				}
 			} else {
@@ -106,12 +130,23 @@ namespace ALM_Interface {
 			}
 		}
 
-		private void tableLayoutPanel1_Paint ( object sender , PaintEventArgs e ) {
-
-		}
-
-		private void tabPage1_Click ( object sender , EventArgs e ) {
-
+		private void NodeTreeViewNodeMouseClick ( object Sender , TreeNodeMouseClickEventArgs Events ) {
+			if( Events.Node.ImageIndex == RootNode.NODE_TYPE || Events.Node.ImageIndex == FolderNode.NODE_TYPE ) {
+				ContentPanel.Controls[ 0 ].Visible = true;
+				ContentPanel.Controls[ 1 ].Visible = false;
+				ContentPanel.Controls[ 2 ].Visible = false;
+			}
+			if( Events.Node.ImageIndex == DeviceNode.NODE_TYPE ) {
+				ContentPanel.Controls[ 0 ].Visible = false;
+				ContentPanel.Controls[ 1 ].Visible = true;
+				ContentPanel.Controls[ 2 ].Visible = false;
+			}
+			if( Events.Node.ImageIndex == DatapointNode.NODE_TYPE ) {
+				ContentPanel.Controls[ 0 ].Visible = false;
+				ContentPanel.Controls[ 1 ].Visible = false;
+				ContentPanel.Controls[ 2 ].Visible = true;
+				this.DatapointControl.LoadDatapointByID( Int32.Parse( Events.Node.Name ) , this.database );
+			}
 		}
 	}
 }

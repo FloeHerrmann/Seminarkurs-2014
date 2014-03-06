@@ -1,16 +1,8 @@
--- DROP TABLE IF EXISTS `datapoint_values`;
--- DROP TABLE IF EXISTS `object_tree`;
--- DROP DATABASE IF EXISTS `seminarkurs2014`
-
--- 1. Schritt: Erstellen der Datenbank
-
-CREATE DATABASE `seminarkurs2014`
-DEFAULT CHARSET=utf8 COLLATE=utf8_general_mysql500_ci
-
--- 2. Schritt: Erstellen der Tabellen und Indizes
-
 SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
+
+DROP TABLE datapoint_values;
+DROP TABLE object_tree;
 
 CREATE TABLE `datapoint_values` (
 	`time_stamp` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
@@ -34,7 +26,7 @@ CREATE TABLE `object_tree` (
 	`sensor_last_connection` timestamp NULL DEFAULT NULL,
 	`datapoint_type` int(11) DEFAULT NULL,
 	`datapoint_unit` varchar(20) COLLATE ucs2_general_mysql500_ci DEFAULT NULL,
-	`datapoint_last_value` varchar(240) COLLATE ucs2_general_mysql500_ci NOT NULL,
+	`datapoint_last_value` varchar(240) COLLATE ucs2_general_mysql500_ci DEFAULT NULL,
 	`datapoint_last_updated` timestamp NULL DEFAULT NULL,
 	PRIMARY KEY (`object_id`),
 	KEY `object_tree_indx_name` (`object_name`),
