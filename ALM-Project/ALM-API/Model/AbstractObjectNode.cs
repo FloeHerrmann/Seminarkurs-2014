@@ -26,11 +26,6 @@ namespace Gsmgh.Alm.Model {
 		private Int32 Type;
 		
 		/// <summary>
-		/// Node path
-		/// </summary>
-		private String Path;
-		
-		/// <summary>
 		/// Node name
 		/// </summary>
 		private String Name;
@@ -85,20 +80,6 @@ namespace Gsmgh.Alm.Model {
 		/// </summary>
 		new public Int32 GetType () {
 			return this.Type;
-		}
-
-		/// <summary>
-		/// Set the path of the node
-		/// </summary>
-		public void SetPath ( String Path ) {
-			this.Path = Path;
-		}
-
-		/// <summary>
-		/// Get the path of the node
-		/// </summary>
-		public String GetPath () {
-			return this.Path;
 		}
 
 		/// <summary>

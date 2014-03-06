@@ -31,7 +31,6 @@ namespace Gsmgh.Alm.Model {
 			this.SetID( RootNodeRow.GetObjectID() );
 			this.SetParentID( RootNodeRow.GetObjectParentID() );
 			this.SetType( NODE_TYPE );
-			this.SetPath( RootNodeRow.GetObjectPath() );
 			this.SetName( RootNodeRow.GetObjectName() );
 			this.SetDescription( RootNodeRow.GetObjectDescription() );
 			this.SetLastUpdated( RootNodeRow.GetObjectLastUpdated() );

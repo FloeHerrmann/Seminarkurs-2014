@@ -12,9 +12,9 @@ namespace Gsmgh.Alm.Database {
 		///		Column names of the object_tree table
 		/// </summary>
 		String[] ValueKeys = { 
-			"OBJECT_ID" , "OBJECT_PARENT_ID" , "OBJECT_TYPE" , "OBJECT_PATH" , "OBJECT_NAME" , "OBJECT_DESCRIPTION" , "OBJECT_LAST_UPDATED" ,
+			"OBJECT_ID" , "OBJECT_PARENT_ID" , "OBJECT_TYPE" ,  "OBJECT_NAME" , "OBJECT_DESCRIPTION" , "OBJECT_LAST_UPDATED" ,
 			"SENSOR_IP_ADDRESS" , "SENSOR_PORT" , "SENSOR_LAST_CONNECTION" ,
-			"DATAPOINT_TYPE" , "DATAPOINT_UNIT" , "DATAPOINT_CALCULATION"
+			"DATAPOINT_TYPE" , "DATAPOINT_UNIT"
 		};
 
 		/// <summary>
@@ -66,10 +66,6 @@ namespace Gsmgh.Alm.Database {
 			}
 		}
 
-		public String GetObjectPath () {
-			return ObjectData[ "OBJECT_PATH" ];
-		}
-
 		public String GetObjectName () {
 			return ObjectData[ "OBJECT_NAME" ];
 		}
@@ -109,10 +105,6 @@ namespace Gsmgh.Alm.Database {
 
 		public String GetDatapointUnit () {
 			return ObjectData[ "DATAPOINT_UNIT" ];
-		}
-
-		public String GetDatapointCalculation () {
-			return ObjectData[ "DATAPOINT_CALCULATION" ];
 		}
 
 	}

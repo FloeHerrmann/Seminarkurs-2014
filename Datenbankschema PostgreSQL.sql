@@ -22,7 +22,6 @@ CREATE TABLE object_tree (
 	object_id bigserial NOT NULL,
 	object_parent_id bigint,
 	object_type integer NOT NULL,
-	object_path character varying(240),
 	object_name character varying(128) NOT NULL,
 	object_description character varying(255),
 	object_last_updated timestamp without time zone,
@@ -31,7 +30,6 @@ CREATE TABLE object_tree (
 	sensor_last_connection timestamp without time zone,
 	datapoint_type integer,
 	datapoint_unit character varying(20),
-	datapoint_calculation character varying(240),
 	CONSTRAINT object_tree_pkey PRIMARY KEY (object_id)
 ) WITH (
 	OIDS=FALSE
@@ -67,11 +65,6 @@ CREATE INDEX object_tree_indx_parent
 	ON object_tree
 	USING btree
 	(object_parent_id);
-
-CREATE INDEX object_tree_indx_path
-	ON object_tree
-	USING btree
-	(object_path COLLATE pg_catalog."default" varchar_pattern_ops);
 
 CREATE INDEX object_tree_indx_type
 	ON object_tree

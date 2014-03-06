@@ -15,6 +15,9 @@ namespace ALM_Interface {
 
 		private Dictionary<String , List<AbstractObjectNode>> parentIdDictionary;
 
+		private Int32 MinTreeWidth = 180;
+		private Int32 CurrentTreeWidth = 0;
+
 		public mainWindow () {
 			InitializeComponent();
 
@@ -40,6 +43,7 @@ namespace ALM_Interface {
 
 			parentIdDictionary = database.GetObjectTreeSortedByParentID();
 			populateTreeView();
+			nodeTreeView.Nodes[ 0 ].Expand();
 
 			database.CloseConnection();
 
@@ -69,6 +73,45 @@ namespace ALM_Interface {
 					parentNode.Nodes.Add( subNode );
 				}
 			}
+		}
+
+		private void nodeTreeViewAfterExpand ( object sender , TreeViewEventArgs e ) {
+			int CurrentTreeWidth = nodeTreeView.ClientSize.Width;
+			if( e.Node.Nodes != null ) {
+				foreach( TreeNode node in e.Node.Nodes ) {
+					CurrentTreeWidth = Math.Max( CurrentTreeWidth , node.Bounds.Right );
+				}
+			}
+			if( ( this.CurrentTreeWidth + 14 ) < this.MinTreeWidth ) this.CurrentTreeWidth = this.MinTreeWidth; 
+			nodeTreeView.Width = this.CurrentTreeWidth;
+			//nodeTreeView.ClientSize = new Size( maxRight , nodeTreeView.ClientSize.Height );
+		}
+
+		private void nodeTreeViewAfterCollapse ( object sender , TreeViewEventArgs e ) {
+			getWidthForNode( nodeTreeView.Nodes[ 0 ] );
+			if( this.CurrentTreeWidth < 130 ) this.CurrentTreeWidth = 130;
+			nodeTreeView.Width = this.CurrentTreeWidth;
+			//nodeTreeView.ClientSize = new Size( this.CurrentTreeWidth , nodeTreeView.ClientSize.Height );
+		}
+
+		private void getWidthForNode ( TreeNode node ) {
+			if( node.IsExpanded ) {
+				if( node.Nodes != null ) {
+					foreach( TreeNode currentNode in node.Nodes ) {
+						getWidthForNode( currentNode );
+					}
+				}
+			} else {
+				this.CurrentTreeWidth = Math.Max( CurrentTreeWidth , node.Bounds.Right );
+			}
+		}
+
+		private void tableLayoutPanel1_Paint ( object sender , PaintEventArgs e ) {
+
+		}
+
+		private void tabPage1_Click ( object sender , EventArgs e ) {
+
 		}
 	}
 }

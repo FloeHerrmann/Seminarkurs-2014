@@ -49,11 +49,6 @@ namespace Gsmgh.Alm.Model {
 		private String Unit;
 
 		/// <summary>
-		/// Calculation for incoming data
-		/// </summary>
-		private String Calculation;
-
-		/// <summary>
 		/// Constructor
 		/// </summary>
 		public DatapointNode () {
@@ -67,13 +62,11 @@ namespace Gsmgh.Alm.Model {
 			this.SetID( RootNodeRow.GetObjectID() );
 			this.SetParentID( RootNodeRow.GetObjectParentID() );
 			this.SetType( NODE_TYPE );
-			this.SetPath( RootNodeRow.GetObjectPath() );
 			this.SetName( RootNodeRow.GetObjectName() );
 			this.SetDescription( RootNodeRow.GetObjectDescription() );
 			this.SetLastUpdated( RootNodeRow.GetObjectLastUpdated() );
 			this.SetDatapointType( RootNodeRow.GetDatapointType() );
 			this.SetUnit( RootNodeRow.GetDatapointUnit() );
-			this.SetCalculation( RootNodeRow.GetDatapointCalculation() );
 		}
 
 		/// <summary>
@@ -117,22 +110,6 @@ namespace Gsmgh.Alm.Model {
 		/// <returns>String that describes the datapoint unit</returns>
 		public String GetUnit () {
 			return this.Unit;
-		}
-
-		/// <summary>
-		/// Set the calculation that is applied to incoming values
-		/// </summary>
-		/// <param name="Calculation">Calculation formula</param>
-		public void SetCalculation ( String Calculation ) {
-			this.Calculation = Calculation;
-		}
-
-		/// <summary>
-		/// Get the calculation that is applied to incoming values
-		/// </summary>
-		/// <returns>Calculation formula</returns>
-		public String GetCalculation () {
-			return this.Calculation;
 		}
 
 		/// <summary>

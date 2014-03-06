@@ -18,7 +18,7 @@ namespace Seminarkurs2014Console {
 			Console.WriteLine( "- - - - - - - - - - - - - - - - " );
 			Console.WriteLine( "Seminarkurs 2014 Konsolenanwendung" );
 
-			Boolean insertPersistentExampleData = false;
+			Boolean insertPersistentExampleData = true;
 
 			// Tell the DatabseFacade to use the MySQLConnector
 			database.SetDatabaseConnector(
@@ -48,7 +48,6 @@ namespace Seminarkurs2014Console {
 			// Create a FolderNode instance
 			FolderNode folderNode01 = new FolderNode();
 			folderNode01.SetParentID( rootNode.GetID() );
-			folderNode01.SetPath( rootNode.GetID().ToString() );
 			folderNode01.SetName( "Erdgeschoss" );
 			folderNode01.SetDescription( "Alle Sensoren im Erdgeschoss" );
 			folderNode01.SetLastUpdated( DateTime.Now );
@@ -62,7 +61,6 @@ namespace Seminarkurs2014Console {
 			// Creat a FolderNode instance
 			FolderNode folderNode02 = new FolderNode();
 			folderNode02.SetParentID( rootNode.GetID() );
-			folderNode02.SetPath( rootNode.GetID().ToString() );
 			folderNode02.SetName( "1. Stock" );
 			folderNode02.SetDescription( "Alle Sensoren im 1. Stock" );
 			folderNode02.SetLastUpdated( DateTime.Now );
@@ -76,7 +74,6 @@ namespace Seminarkurs2014Console {
 			// Create a DeviceNode instance
 			DeviceNode deviceNode01 = new DeviceNode();
 			deviceNode01.SetParentID( folderNode01.GetID() );
-			deviceNode01.SetPath( folderNode01.GetPath() + "/" + folderNode01.GetID() );
 			deviceNode01.SetName( "Raum 140" );
 			deviceNode01.SetDescription( "Sensor im Raum 140" );
 			deviceNode01.SetLastUpdated( DateTime.Now );
@@ -92,7 +89,6 @@ namespace Seminarkurs2014Console {
 			// Create a DatapointNode instance
 			DatapointNode datapointNode01 = new DatapointNode();
 			datapointNode01.SetParentID( deviceNode01.GetID() );
-			datapointNode01.SetPath( deviceNode01.GetPath() + "/" + datapointNode01.GetID() );
 			datapointNode01.SetName( "Sauerstoff" );
 			datapointNode01.SetDescription( "CO2 gehalt in ppm" );
 			datapointNode01.SetLastUpdated( DateTime.Now );
@@ -108,7 +104,6 @@ namespace Seminarkurs2014Console {
 			// Create a DatapointNode instance
 			DatapointNode datapointNode02 = new DatapointNode();
 			datapointNode02.SetParentID( deviceNode01.GetID() );
-			datapointNode02.SetPath( deviceNode01.GetPath() + "/" + deviceNode01.GetID() );
 			datapointNode02.SetName( "Lautstärke" );
 			datapointNode02.SetDescription( "Lautstärke in db" );
 			datapointNode02.SetLastUpdated( DateTime.Now );
@@ -352,7 +347,6 @@ namespace Seminarkurs2014Console {
 		static RootNode InsertRootNode ( String Name , String Description , Int64 ParentID ) {
 			RootNode node = new RootNode();
 			node.SetParentID( ParentID );
-			node.SetPath( "" );
 			node.SetName( Name );
 			node.SetDescription( Description );
 			node.SetLastUpdated( DateTime.Now );
@@ -368,7 +362,6 @@ namespace Seminarkurs2014Console {
 			// Create a FolderNode instance
 			FolderNode node = new FolderNode();
 			node.SetParentID( ParentID );
-			node.SetPath( "" );
 			node.SetName( Name );
 			node.SetDescription( Description );
 			node.SetLastUpdated( DateTime.Now );
@@ -384,7 +377,6 @@ namespace Seminarkurs2014Console {
 			// Create a FolderNode instance
 			DeviceNode node = new DeviceNode();
 			node.SetParentID( ParentID );
-			node.SetPath( "" );
 			node.SetName( Name );
 			node.SetDescription( Description );
 			node.SetLastUpdated( DateTime.Now );
@@ -406,7 +398,6 @@ namespace Seminarkurs2014Console {
 			// Create a FolderNode instance
 			DatapointNode node = new DatapointNode();
 			node.SetParentID( ParentID );
-			node.SetPath( "" );
 			node.SetName( Name );
 			node.SetDescription( Description );
 			node.SetLastUpdated( DateTime.Now );

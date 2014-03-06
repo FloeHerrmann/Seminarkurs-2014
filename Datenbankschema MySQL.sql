@@ -26,7 +26,6 @@ CREATE TABLE `object_tree` (
 	`object_id` bigint(20) NOT NULL AUTO_INCREMENT,
 	`object_parent_id` bigint(20) DEFAULT NULL,
 	`object_type` int(11) NOT NULL,
-	`object_path` varchar(240) COLLATE ucs2_general_mysql500_ci DEFAULT NULL,
 	`object_name` varchar(128) COLLATE ucs2_general_mysql500_ci NOT NULL,
 	`object_description` varchar(240) COLLATE ucs2_general_mysql500_ci DEFAULT NULL,
 	`object_last_updated` timestamp NULL DEFAULT NULL,
@@ -35,11 +34,9 @@ CREATE TABLE `object_tree` (
 	`sensor_last_connection` timestamp NULL DEFAULT NULL,
 	`datapoint_type` int(11) DEFAULT NULL,
 	`datapoint_unit` varchar(20) COLLATE ucs2_general_mysql500_ci DEFAULT NULL,
-	`datapoint_calculation` varchar(240) COLLATE ucs2_general_mysql500_ci DEFAULT NULL,
 	PRIMARY KEY (`object_id`),
 	KEY `object_tree_indx_name` (`object_name`),
 	KEY `object_tree_indx_parent` (`object_parent_id`),
-	KEY `object_tree_indx_path` (`object_path`),
 	KEY `object_tree_indx_type` (`object_type`)
 ) ENGINE=InnoDB DEFAULT CHARSET=ucs2 COLLATE=ucs2_general_mysql500_ci AUTO_INCREMENT=1 ;
 

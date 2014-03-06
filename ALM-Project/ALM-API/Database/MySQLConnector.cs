@@ -247,8 +247,8 @@ namespace Gsmgh.Alm.Database {
 			//		[colum name] = [value]	> Set a column to the given value
 			// WHERE object_id = {0}		> Update all rows where the column object_id matches the given id
 			Command.CommandText = String.Format(
-					"INSERT INTO object_tree ( object_parent_id , object_type , object_path , object_name , object_description , object_last_updated ) Values( {0} , {1} , '{2}' , '{3}' , '{4}' , '{5}' )" ,
-					Node.GetParentID() , FolderNode.NODE_TYPE , Node.GetPath() , Node.GetName() , Node.GetDescription() , Node.GetLastUpdated().ToString( "yyyy-MM-dd HH:mm:ss" )
+					"INSERT INTO object_tree ( object_parent_id , object_type , object_name , object_description , object_last_updated ) Values( {0} , {1} , '{2}' , '{3}' , '{4}' )" ,
+					Node.GetParentID() , FolderNode.NODE_TYPE , Node.GetName() , Node.GetDescription() , Node.GetLastUpdated().ToString( "yyyy-MM-dd HH:mm:ss" )
 			);
 			Command.Connection = this.Connection;
 
@@ -285,8 +285,8 @@ namespace Gsmgh.Alm.Database {
 			//		[colum name] = [value]	> Set a column to the given value
 			// WHERE object_id = {0}		> Update all rows where the column object_id matches the given id
 			Command.CommandText = String.Format(
-				"INSERT INTO object_tree ( object_parent_id , object_type , object_path , object_name , object_description , object_last_updated , sensor_ip_address , sensor_port ) Values( {0} , {1} , '{2}' , '{3}' , '{4}' , '{5}' , '{6}' , {7} )" ,
-				Node.GetParentID() , DeviceNode.NODE_TYPE , Node.GetPath() , Node.GetName() , Node.GetDescription() , Node.GetLastUpdated().ToString( "yyyy-MM-dd HH:mm:ss" ) , Node.GetIPAddress().ToString() , Node.GetPort()
+				"INSERT INTO object_tree ( object_parent_id , object_type , object_name , object_description , object_last_updated , sensor_ip_address , sensor_port ) Values( {0} , {1} , '{2}' , '{3}' , '{4}' , '{5}' , '{6}' )" ,
+				Node.GetParentID() , DeviceNode.NODE_TYPE , Node.GetName() , Node.GetDescription() , Node.GetLastUpdated().ToString( "yyyy-MM-dd HH:mm:ss" ) , Node.GetIPAddress().ToString() , Node.GetPort()
 			);
 			Command.Connection = this.Connection;
 
@@ -323,8 +323,8 @@ namespace Gsmgh.Alm.Database {
 			//		[colum name] = [value]	> Set a column to the given value
 			// WHERE object_id = {0}		> Update all rows where the column object_id matches the given id
 			Command.CommandText = String.Format(
-				"INSERT INTO object_tree ( object_parent_id , object_type , object_path , object_name , object_description , object_last_updated , datapoint_type , datapoint_unit , datapoint_calculation ) Values( {0} , {1} , '{2}' , '{3}' , '{4}' , '{5}' , {6} , '{7}' , '{8}' )" ,
-				Node.GetParentID() , DatapointNode.NODE_TYPE , Node.GetPath() , Node.GetName() , Node.GetDescription() , Node.GetLastUpdated().ToString( "yyyy-MM-dd HH:mm:ss" ) , Node.GetDatapointType().ToString() , Node.GetUnit() , Node.GetCalculation()
+				"INSERT INTO object_tree ( object_parent_id , object_type ,  object_name , object_description , object_last_updated , datapoint_type , datapoint_unit ) Values( {0} , {1} , '{2}' , '{3}' , '{4}' , '{5}' , '{6}' )" ,
+				Node.GetParentID() , DatapointNode.NODE_TYPE , Node.GetName() , Node.GetDescription() , Node.GetLastUpdated().ToString( "yyyy-MM-dd HH:mm:ss" ) , Node.GetDatapointType().ToString() , Node.GetUnit()
 			);
 			Command.Connection = this.Connection;
 
@@ -361,8 +361,8 @@ namespace Gsmgh.Alm.Database {
 			//		[colum name] = [value]	> Set a column to the given value
 			// WHERE object_id = {0}		> Update all rows where the column object_id matches the given id
 			Command.CommandText = String.Format(
-				"UPDATE object_tree SET object_parent_id={0}, object_path='{1}', object_name='{2}', object_description='{3}', object_last_updated='{4}' WHERE object_id={5}" ,
-				Node.GetParentID() , Node.GetPath() , Node.GetName() , Node.GetDescription() , DateTime.Now.ToString( "yyyy-MM-dd HH:mm:ss" ) , Node.GetID()
+				"UPDATE object_tree SET object_parent_id={0}, object_name='{1}', object_description='{2}', object_last_updated='{3}' WHERE object_id={4}" ,
+				Node.GetParentID() , Node.GetName() , Node.GetDescription() , DateTime.Now.ToString( "yyyy-MM-dd HH:mm:ss" ) , Node.GetID()
 			);
 			Command.Connection = this.Connection;
 
@@ -396,8 +396,8 @@ namespace Gsmgh.Alm.Database {
 			//		[colum name] = [value]	> Set a column to the given value
 			// WHERE object_id = {0}		> Update all rows where the column object_id matches the given id
 			Command.CommandText = String.Format(
-				"UPDATE object_tree SET object_parent_id={0}, object_path='{1}', object_name='{2}', object_description='{3}', object_last_updated='{4}' WHERE object_id={5}" ,
-				Node.GetParentID() , Node.GetPath() , Node.GetName() , Node.GetDescription() , DateTime.Now.ToString( "yyyy-MM-dd HH:mm:ss" ) , Node.GetID()
+				"UPDATE object_tree SET object_parent_id={0}, object_name='{1}', object_description='{2}', object_last_updated='{3}' WHERE object_id={4}" ,
+				Node.GetParentID() , Node.GetName() , Node.GetDescription() , DateTime.Now.ToString( "yyyy-MM-dd HH:mm:ss" ) , Node.GetID()
 			);
 			Command.Connection = this.Connection;
 
@@ -431,8 +431,8 @@ namespace Gsmgh.Alm.Database {
 			//		[colum name] = [value]	> Set a column to the given value
 			// WHERE object_id = {0}		> Update all rows where the column object_id matches the given id
 			Command.CommandText = String.Format(
-				"UPDATE object_tree SET object_parent_id={0}, object_path='{1}', object_name='{2}', object_description='{3}', object_last_updated='{4}', sensor_ip_address='{5}', sensor_port={6} WHERE object_id={7}" ,
-				Node.GetParentID() , Node.GetPath() , Node.GetName() , Node.GetDescription() , DateTime.Now.ToString( "yyyy-MM-dd HH:mm:ss" ) , Node.GetIPAddress().ToString() , Node.GetPort() , Node.GetID()
+				"UPDATE object_tree SET object_parent_id={0}, object_name='{1}', object_description='{2}', object_last_updated='{3}', sensor_ip_address='{4}', sensor_port={5} WHERE object_id={6}" ,
+				Node.GetParentID() , Node.GetName() , Node.GetDescription() , DateTime.Now.ToString( "yyyy-MM-dd HH:mm:ss" ) , Node.GetIPAddress().ToString() , Node.GetPort() , Node.GetID()
 			);
 			Command.Connection = this.Connection;
 
@@ -466,8 +466,8 @@ namespace Gsmgh.Alm.Database {
 			//		[colum name] = [value]	> Set a column to the given value
 			// WHERE object_id = {0}		> Update all rows where the column object_id matches the given id
 			Command.CommandText = String.Format(
-				"UPDATE object_tree SET object_parent_id={0}, object_path='{1}', object_name='{2}', object_description='{3}', object_last_updated='{4}', datapoint_type={5}, datapoint_unit='{6}', datapoint_calculation='{7}' WHERE object_id={8}" ,
-				Node.GetParentID() , Node.GetPath() , Node.GetName() , Node.GetDescription() , DateTime.Now.ToString( "yyyy-MM-dd HH:mm:ss" ) , Node.GetDatapointType() , Node.GetUnit() , Node.GetCalculation() , Node.GetID()
+				"UPDATE object_tree SET object_parent_id={0}, object_name='{1}', object_description='{2}', object_last_updated='{3}', datapoint_type={4}, datapoint_unit='{5}' WHERE object_id={6}" ,
+				Node.GetParentID() , Node.GetName() , Node.GetDescription() , DateTime.Now.ToString( "yyyy-MM-dd HH:mm:ss" ) , Node.GetDatapointType() , Node.GetUnit() , Node.GetID()
 			);
 			Command.Connection = this.Connection;
 
@@ -583,7 +583,7 @@ namespace Gsmgh.Alm.Database {
 			// FROM object_tree			> Target table object_tree
 			// WHERE object_id = {0}	> Get all rows where the column object_id matches the given id
 			// LIMIT 1					> Because the id is unique we can limit it to 1 row
-			Command.CommandText = "SELECT * FROM object_tree";
+			Command.CommandText = "SELECT * FROM object_tree ORDER BY object_name";
 			Command.Connection = this.Connection;
 
 			// Represents a row (tuple) of the object_tree table
