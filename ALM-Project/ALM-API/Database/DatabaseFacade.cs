@@ -54,6 +54,10 @@ namespace Gsmgh.Alm.Database {
 			return this.DatabaseConnector.InsertNode( Node );
 		}
 
+		public Boolean InsertNode ( DatapointValueNode Node ) {
+			return this.DatabaseConnector.InsertNode( Node );
+		}
+
 		public Boolean UpdateNode ( RootNode Node ) {
 			return this.DatabaseConnector.UpdateNode( Node );
 		}
@@ -101,6 +105,17 @@ namespace Gsmgh.Alm.Database {
 			}
 
 			return parentIdDictionary;
+		}
+
+		public List<DatapointNode> GetAllDatapointNodes () {
+			return this.DatabaseConnector.GetAllDatapointNodes();
+		}
+
+		public Boolean DeleteAllObjectTreeData () {
+			return this.DatabaseConnector.DeleteAllObjectTreeData();
+		}
+		public Boolean DeleteAllDatapointValuesData () {
+			return this.DatabaseConnector.DeleteAllDatapointValuesData();
 		}
 	}
 }

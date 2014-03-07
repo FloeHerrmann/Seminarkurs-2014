@@ -200,31 +200,39 @@ namespace Gsmgh.Alm.Database {
 		///		false, if no row was inserted
 		/// </returns>
 		public Boolean InsertNode ( RootNode Node ) {
-			// Command that will be send to the databse
-			MySqlCommand Command = this.Connection.CreateCommand();
+			try {
+				// Check if there is already a root node because there can only be one root
+				RootNode TestRootNode = this.GetRootNode();
+				if( TestRootNode != null ) throw new Exception( "There is already a root node" );
 
-			// Update a row in the databse with the given node id
-			// UPDATE						> Update rows of a table
-			// SET	[colum name] = [value],	> Set a column to the given value
-			//		[colum name] = [value]	> Set a column to the given value
-			// WHERE object_id = {0}		> Update all rows where the column object_id matches the given id
-			Command.CommandText = String.Format(
-				"INSERT INTO object_tree ( object_type , object_name , object_description , object_last_updated ) Values( {0} , '{1}' , '{2}' , '{3}' )" ,
-				RootNode.NODE_TYPE , Node.GetName() , Node.GetDescription() , Node.GetLastUpdated().ToString( "yyyy-MM-dd HH:mm:ss" )
-			);
-			Command.Connection = this.Connection;
+				// Command that will be send to the databse
+				MySqlCommand Command = this.Connection.CreateCommand();
 
-			// Execute the command and get the number of rows that are affected by the command
-			Int32 AffectedRows = Command.ExecuteNonQuery();
+				// Update a row in the databse with the given node id
+				// UPDATE						> Update rows of a table
+				// SET	[colum name] = [value],	> Set a column to the given value
+				//		[colum name] = [value]	> Set a column to the given value
+				// WHERE object_id = {0}		> Update all rows where the column object_id matches the given id
+				Command.CommandText = String.Format(
+					"INSERT INTO object_tree ( object_type , object_name , object_description , object_last_updated ) Values( {0} , '{1}' , '{2}' , '{3}' )" ,
+					RootNode.NODE_TYPE , Node.GetName() , Node.GetDescription() , Node.GetLastUpdated().ToString( "yyyy-MM-dd HH:mm:ss" )
+				);
+				Command.Connection = this.Connection;
 
-			// Set the ID of the node to the ID that was provided by the database
-			Node.SetID( Command.LastInsertedId );
-				
-			// If no rows where affected return false
-			if( AffectedRows == 0 ) return false;
+				// Execute the command and get the number of rows that are affected by the command
+				Int32 AffectedRows = Command.ExecuteNonQuery();
 
-			// Row successfully insert
-			return true;
+				// Set the ID of the node to the ID that was provided by the database
+				Node.SetID( Command.LastInsertedId );
+
+				// If no rows where affected return false
+				if( AffectedRows == 0 ) return false;
+
+				// Row successfully insert
+				return true;
+			} catch( Exception ex ) {
+				throw ex;
+			}
 		}
 
 		/// <summary>
@@ -333,6 +341,52 @@ namespace Gsmgh.Alm.Database {
 
 			// Set the ID of the node to the ID that was provided by the database
 			Node.SetID( Command.LastInsertedId );
+
+			// If no rows where affected return false
+			if( AffectedRows == 0 ) return false;
+
+			// Row successfully insert
+			return true;
+		}
+
+		/// <summary>
+		///		Insert a DatapointValueNode into the database
+		/// </summary>
+		/// <param name="Node">
+		///		DatapointValueNode that should be insert
+		/// </param>
+		/// <returns>
+		///		true, if a row was inserted
+		///		false, if no row was inserted
+		/// </returns>
+		public Boolean InsertNode ( DatapointValueNode Node ) {
+			// Command that will be send to the databse
+			MySqlCommand Command = this.Connection.CreateCommand();
+
+			// Update a row in the databse with the given node id
+			// UPDATE						> Update rows of a table
+			// SET	[colum name] = [value],	> Set a column to the given value
+			//		[colum name] = [value]	> Set a column to the given value
+			// WHERE object_id = {0}		> Update all rows where the column object_id matches the given id
+
+			if( Node.GetType() == DatapointNode.TYPE_INTEGER ) {
+				Command.CommandText = String.Format(
+					"INSERT INTO datapoint_values VALUES( '{0}' , {1} , {2} , {3} , {4} , '{5}' )" ,
+					Node.GetTimeStamp().ToString( "yyyy-MM-dd HH:mm:ss" ) , Node.GetDatapointID() , Node.GetType() , Node.GetIntegerValue() , Node.GetDecimalValue() , Node.GetStringValue()
+				);
+			} else if( Node.GetType() == DatapointNode.TYPE_FLOATING_POINT ) {
+				String decimalValue = Node.GetDecimalValue().ToString().Replace( "," , "." );
+				decimalValue = decimalValue.Substring( 0 , decimalValue.IndexOf( "." ) + 3 );
+				Command.CommandText = String.Format(
+					"INSERT INTO datapoint_values VALUES( '{0}' , {1} , {2} , {3} , {4} , '{5}' )" ,
+					Node.GetTimeStamp().ToString( "yyyy-MM-dd HH:mm:ss" ) , Node.GetDatapointID() , Node.GetType() , Node.GetIntegerValue() , decimalValue , decimalValue
+				);
+			}
+			
+			Command.Connection = this.Connection;
+
+			// Execute the command and get the number of rows that are affected by the command
+			Int32 AffectedRows = Command.ExecuteNonQuery();
 
 			// If no rows where affected return false
 			if( AffectedRows == 0 ) return false;
@@ -604,6 +658,54 @@ namespace Gsmgh.Alm.Database {
 
 			// Return the list with all nodes
 			return nodeList;
+		}
+
+		public Boolean DeleteAllObjectTreeData () {
+			try {
+				MySqlCommand Command = this.Connection.CreateCommand();
+				Command.CommandText = String.Format( "DELETE FROM object_tree");
+				Command.Connection = this.Connection;
+				Int32 AffectedRows = Command.ExecuteNonQuery();
+				return true;
+			} catch( Exception ex ) {
+				throw ex;
+			}
+		}
+
+		public Boolean DeleteAllDatapointValuesData () {
+			try {
+				MySqlCommand Command = this.Connection.CreateCommand();
+				Command.CommandText = String.Format( "DELETE FROM datapoint_values" );
+				Command.Connection = this.Connection;
+				Int32 AffectedRows = Command.ExecuteNonQuery();
+				return true;
+			} catch( Exception ex ) {
+				throw ex;
+			}
+		}
+
+		public List<DatapointNode> GetAllDatapointNodes () {
+			List<DatapointNode> datapointNodes = new List<DatapointNode>();
+
+			MySqlCommand Command = this.Connection.CreateCommand();
+			MySqlDataReader Reader;
+
+			Command.CommandText = String.Format( "SELECT * FROM object_tree WHERE object_type={0} ORDER BY object_name" , DatapointNode.NODE_TYPE );
+			Command.Connection = this.Connection;
+
+			Reader = Command.ExecuteReader();
+
+			// Read the answer
+			while( Reader.Read() ) {
+				string row = "";
+				for( int i = 0 ; i < ( Reader.FieldCount - 1 ) ; i++ )
+					row += Reader.GetValue( i ).ToString() + ",";
+				// RootNode = AbstracObjectNode
+				datapointNodes.Add( new DatapointNode( new ObjectTreeRow( row ) ) );
+			}
+			Reader.Close();
+
+			return datapointNodes;
 		}
 
 	}

@@ -20,6 +20,7 @@ namespace Gsmgh.Alm.Database {
 		Boolean InsertNode ( FolderNode Node );
 		Boolean InsertNode ( DeviceNode Node );
 		Boolean InsertNode ( DatapointNode Node );
+		Boolean InsertNode ( DatapointValueNode Node );
 
 		Boolean UpdateNode ( RootNode Node );
 		Boolean UpdateNode ( FolderNode Node );
@@ -33,6 +34,11 @@ namespace Gsmgh.Alm.Database {
 		Boolean DeleteNode ( DatapointNode Node );
 
 		List<AbstractObjectNode> GetAllAbstractNodes ();
+		List<DatapointNode> GetAllDatapointNodes ();
+
+		Boolean DeleteAllObjectTreeData ();
+		Boolean DeleteAllDatapointValuesData ();
+		
 
 	}
 }

@@ -125,7 +125,7 @@ namespace Gsmgh.Alm.Model {
 		}
 
 		public void SetLastValue ( String Value ) {
-			this.LastValue = Value;
+			this.LastValue = Value.Replace( "," , "." );
 		}
 		public String GetLastValue () {
 			return this.LastValue;

@@ -61,7 +61,7 @@ namespace Gsmgh.Alm.Model {
 		/// <summary>
 		/// Set the ID of the corresponding datapoint
 		/// </summary>
-		public void GetDatapointID ( Int64 DatapointID ) {
+		public void SetDatapointID ( Int64 DatapointID ) {
 			this.DatapointID = DatapointID;
 		}
 
