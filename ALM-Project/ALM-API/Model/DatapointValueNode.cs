@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Gsmgh.Alm.Database;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -41,6 +42,17 @@ namespace Gsmgh.Alm.Model {
 		/// Interger value
 		/// </summary>
 		private String StringValue;
+
+		public DatapointValueNode () { }
+
+		public DatapointValueNode ( DatapointValuesRow DataRow ) {
+			this.SetTimeStamp( DataRow.GetTimeStamp() );
+			this.SetDatapointID( DataRow.GetDatapointID() );
+			this.SetType( DataRow.GetDataType() );
+			this.SetIntegerValue( DataRow.GetIntegerValue() );
+			this.SetDecimalValue( DataRow.GetDecimalValue() );
+			this.SetStringValue( DataRow.GetStringValue() );
+		}
 
 		/// <summary>
 		/// Set the Timestamp of the datapoint value

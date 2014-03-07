@@ -111,6 +111,10 @@ namespace Gsmgh.Alm.Database {
 			return this.DatabaseConnector.GetAllDatapointNodes();
 		}
 
+		public List<DatapointValueNode> GetDatapointValuesByDatapointID ( Int64 DatapointID , DateTime From , DateTime To ) {
+			return this.DatabaseConnector.GetDatapointValuesByDatapointID( DatapointID , From , To );
+		}
+
 		public Boolean DeleteAllObjectTreeData () {
 			return this.DatabaseConnector.DeleteAllObjectTreeData();
 		}

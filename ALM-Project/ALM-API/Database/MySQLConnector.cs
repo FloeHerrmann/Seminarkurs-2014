@@ -660,6 +660,31 @@ namespace Gsmgh.Alm.Database {
 			return nodeList;
 		}
 
+		public List<DatapointValueNode> GetDatapointValuesByDatapointID ( Int64 DatapointID , DateTime From , DateTime To ) {
+			List<DatapointValueNode> datapoinValues = new List<DatapointValueNode>();
+
+			MySqlCommand Command = this.Connection.CreateCommand();
+			MySqlDataReader Reader;
+
+
+			Command.CommandText = String.Format( "SELECT * FROM datapoint_values WHERE datapoint_id={0} AND time_stamp BETWEEN '{1}' AND '{2}';" , DatapointID , From.ToString( "yyyy-MM-dd HH:mm:ss" ) , To.ToString( "yyyy-MM-dd HH:mm:ss" ) );
+			Command.Connection = this.Connection;
+
+			Reader = Command.ExecuteReader();
+
+			// Read the answer
+			while( Reader.Read() ) {
+				string row = "";
+				for( int i = 0 ; i < ( Reader.FieldCount ) ; i++ )
+					row += Reader.GetValue( i ).ToString() + "/";
+				// RootNode = AbstracObjectNode
+				datapoinValues.Add( new DatapointValueNode( new DatapointValuesRow( row.Substring( 0 , row.Length - 1) ) ) );
+			}
+			Reader.Close();
+
+			return datapoinValues;
+		}
+
 		public Boolean DeleteAllObjectTreeData () {
 			try {
 				MySqlCommand Command = this.Connection.CreateCommand();
