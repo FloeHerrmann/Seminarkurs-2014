@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Windows;
 using System.IO;
 using Gsmgh.Alm.Database;
 using Gsmgh.Alm.Model;
@@ -21,7 +22,6 @@ namespace ALM_Interface.UserControls {
 		public DatapointControl () {
 			InitializeComponent();
 			ChartArea area = new ChartArea( "Datapoint" );
-			ChartDatapoint.ChartAreas.Add( area );
 			ChartDatapoint.Dock = DockStyle.Fill;
 		}
 
@@ -31,6 +31,7 @@ namespace ALM_Interface.UserControls {
 			DatapointNode datapoint = this.Database.GetDatapointNodeByID( nodeID );
 			FolderNode parent = this.Database.GetFolderNodeByID( datapoint.GetParentID() );
 			this.Database.CloseConnection();
+
 			this.DatapointID = datapoint.GetID();
 			this.LabelDatapointName.Text = datapoint.GetName();
 			this.LabelDatapointDescription.Text = datapoint.GetDescription();
@@ -52,7 +53,7 @@ namespace ALM_Interface.UserControls {
 
 			Series datapointSeries = new Series();
 
-			datapointSeries.ChartArea = "Datapoint";
+			datapointSeries.ChartArea = ChartDatapoint.ChartAreas[ 0 ].Name;
 			datapointSeries.ChartType = SeriesChartType.Line;
 			datapointSeries.XValueType = ChartValueType.DateTime;
 
@@ -70,13 +71,18 @@ namespace ALM_Interface.UserControls {
 
 			Double maxValue = 1.0;
 			foreach( DatapointValueNode valueNode in datapointValues ) {
-				Double value = Double.Parse( valueNode.GetStringValue() );
+				Double value = Double.Parse( valueNode.GetStringValue().Replace(".",",") );
 				datapointSeries.Points.AddXY( valueNode.GetTimeStamp().ToOADate() , value );
 				if( value > maxValue ) maxValue = value;
 			}
 
 			ChartDatapoint.Series.Add( datapointSeries );
 			ChartDatapoint.ChartAreas[ 0 ].RecalculateAxesScale();
+		}
+
+		private void DatapointTabControlResize ( object sender , EventArgs e ) {
+			//Console.WriteLine( this.Height );
+			//ChartDatapoint.Height = this.Height - 240;
 		}
 	}
 }

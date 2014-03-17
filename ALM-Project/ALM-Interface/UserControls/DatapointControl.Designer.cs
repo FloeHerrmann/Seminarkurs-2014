@@ -25,6 +25,7 @@
 		private void InitializeComponent () {
 			System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
 			System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
+			System.Windows.Forms.DataVisualization.Charting.Title title1 = new System.Windows.Forms.DataVisualization.Charting.Title();
 			this.DatapointTabControl = new System.Windows.Forms.TabControl();
 			this.DatapointTabControlOverview = new System.Windows.Forms.TabPage();
 			this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
@@ -43,9 +44,9 @@
 			this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
 			this.LabelDatapointDescription = new System.Windows.Forms.Label();
 			this.LabelDatapointName = new System.Windows.Forms.Label();
+			this.ChartDatapoint = new System.Windows.Forms.DataVisualization.Charting.Chart();
 			this.DatapointTabControlAnalysis = new System.Windows.Forms.TabPage();
 			this.DatapointTabControlSettings = new System.Windows.Forms.TabPage();
-			this.ChartDatapoint = new System.Windows.Forms.DataVisualization.Charting.Chart();
 			this.DatapointTabControl.SuspendLayout();
 			this.DatapointTabControlOverview.SuspendLayout();
 			this.tableLayoutPanel1.SuspendLayout();
@@ -62,8 +63,9 @@
 			this.DatapointTabControl.Location = new System.Drawing.Point(0, 0);
 			this.DatapointTabControl.Name = "DatapointTabControl";
 			this.DatapointTabControl.SelectedIndex = 0;
-			this.DatapointTabControl.Size = new System.Drawing.Size(393, 386);
+			this.DatapointTabControl.Size = new System.Drawing.Size(484, 612);
 			this.DatapointTabControl.TabIndex = 0;
+			this.DatapointTabControl.Resize += new System.EventHandler(this.DatapointTabControlResize);
 			// 
 			// DatapointTabControlOverview
 			// 
@@ -71,7 +73,7 @@
 			this.DatapointTabControlOverview.Location = new System.Drawing.Point(4, 22);
 			this.DatapointTabControlOverview.Name = "DatapointTabControlOverview";
 			this.DatapointTabControlOverview.Padding = new System.Windows.Forms.Padding(3);
-			this.DatapointTabControlOverview.Size = new System.Drawing.Size(385, 360);
+			this.DatapointTabControlOverview.Size = new System.Drawing.Size(476, 586);
 			this.DatapointTabControlOverview.TabIndex = 0;
 			this.DatapointTabControlOverview.Text = "Datenpunkt - Übersicht";
 			this.DatapointTabControlOverview.UseVisualStyleBackColor = true;
@@ -107,7 +109,7 @@
 			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
 			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
 			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-			this.tableLayoutPanel1.Size = new System.Drawing.Size(379, 354);
+			this.tableLayoutPanel1.Size = new System.Drawing.Size(470, 580);
 			this.tableLayoutPanel1.TabIndex = 0;
 			// 
 			// LabelDatapointLastValue
@@ -115,10 +117,10 @@
 			this.LabelDatapointLastValue.AutoSize = true;
 			this.LabelDatapointLastValue.BackColor = System.Drawing.SystemColors.Window;
 			this.LabelDatapointLastValue.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.LabelDatapointLastValue.Location = new System.Drawing.Point(113, 210);
+			this.LabelDatapointLastValue.Location = new System.Drawing.Point(141, 210);
 			this.LabelDatapointLastValue.Margin = new System.Windows.Forms.Padding(0);
 			this.LabelDatapointLastValue.Name = "LabelDatapointLastValue";
-			this.LabelDatapointLastValue.Size = new System.Drawing.Size(266, 30);
+			this.LabelDatapointLastValue.Size = new System.Drawing.Size(329, 30);
 			this.LabelDatapointLastValue.TabIndex = 12;
 			this.LabelDatapointLastValue.Text = "-";
 			this.LabelDatapointLastValue.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -132,7 +134,7 @@
 			this.label3.Margin = new System.Windows.Forms.Padding(0);
 			this.label3.Name = "label3";
 			this.label3.Padding = new System.Windows.Forms.Padding(10, 0, 0, 0);
-			this.label3.Size = new System.Drawing.Size(113, 30);
+			this.label3.Size = new System.Drawing.Size(141, 30);
 			this.label3.TabIndex = 11;
 			this.label3.Text = "Letzter Wert";
 			this.label3.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -146,7 +148,7 @@
 			this.label1.Margin = new System.Windows.Forms.Padding(0);
 			this.label1.Name = "label1";
 			this.label1.Padding = new System.Windows.Forms.Padding(10, 0, 0, 0);
-			this.label1.Size = new System.Drawing.Size(113, 30);
+			this.label1.Size = new System.Drawing.Size(141, 30);
 			this.label1.TabIndex = 0;
 			this.label1.Text = "Datenpunkt ID";
 			this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -159,7 +161,7 @@
 			this.label2.Margin = new System.Windows.Forms.Padding(0);
 			this.label2.Name = "label2";
 			this.label2.Padding = new System.Windows.Forms.Padding(10, 0, 0, 0);
-			this.label2.Size = new System.Drawing.Size(113, 30);
+			this.label2.Size = new System.Drawing.Size(141, 30);
 			this.label2.TabIndex = 1;
 			this.label2.Text = "Übergordnetes Objekt";
 			this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -169,10 +171,10 @@
 			this.LabelDatapointID.AutoSize = true;
 			this.LabelDatapointID.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(238)))), ((int)(((byte)(238)))), ((int)(((byte)(238)))));
 			this.LabelDatapointID.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.LabelDatapointID.Location = new System.Drawing.Point(113, 60);
+			this.LabelDatapointID.Location = new System.Drawing.Point(141, 60);
 			this.LabelDatapointID.Margin = new System.Windows.Forms.Padding(0);
 			this.LabelDatapointID.Name = "LabelDatapointID";
-			this.LabelDatapointID.Size = new System.Drawing.Size(266, 30);
+			this.LabelDatapointID.Size = new System.Drawing.Size(329, 30);
 			this.LabelDatapointID.TabIndex = 2;
 			this.LabelDatapointID.Text = "-";
 			this.LabelDatapointID.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -181,10 +183,10 @@
 			// 
 			this.LabelDatapointParent.AutoSize = true;
 			this.LabelDatapointParent.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.LabelDatapointParent.Location = new System.Drawing.Point(113, 90);
+			this.LabelDatapointParent.Location = new System.Drawing.Point(141, 90);
 			this.LabelDatapointParent.Margin = new System.Windows.Forms.Padding(0);
 			this.LabelDatapointParent.Name = "LabelDatapointParent";
-			this.LabelDatapointParent.Size = new System.Drawing.Size(266, 30);
+			this.LabelDatapointParent.Size = new System.Drawing.Size(329, 30);
 			this.LabelDatapointParent.TabIndex = 3;
 			this.LabelDatapointParent.Text = "-";
 			this.LabelDatapointParent.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -198,7 +200,7 @@
 			this.label4.Margin = new System.Windows.Forms.Padding(0);
 			this.label4.Name = "label4";
 			this.label4.Padding = new System.Windows.Forms.Padding(10, 0, 0, 0);
-			this.label4.Size = new System.Drawing.Size(113, 30);
+			this.label4.Size = new System.Drawing.Size(141, 30);
 			this.label4.TabIndex = 4;
 			this.label4.Text = "Datentyp";
 			this.label4.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -211,7 +213,7 @@
 			this.label5.Margin = new System.Windows.Forms.Padding(0);
 			this.label5.Name = "label5";
 			this.label5.Padding = new System.Windows.Forms.Padding(10, 0, 0, 0);
-			this.label5.Size = new System.Drawing.Size(113, 30);
+			this.label5.Size = new System.Drawing.Size(141, 30);
 			this.label5.TabIndex = 5;
 			this.label5.Text = "Einheit";
 			this.label5.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -225,7 +227,7 @@
 			this.label6.Margin = new System.Windows.Forms.Padding(0);
 			this.label6.Name = "label6";
 			this.label6.Padding = new System.Windows.Forms.Padding(10, 0, 0, 0);
-			this.label6.Size = new System.Drawing.Size(113, 30);
+			this.label6.Size = new System.Drawing.Size(141, 30);
 			this.label6.TabIndex = 6;
 			this.label6.Text = "Zuletzt geändert";
 			this.label6.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -235,10 +237,10 @@
 			this.LabelDatapointType.AutoSize = true;
 			this.LabelDatapointType.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(238)))), ((int)(((byte)(238)))), ((int)(((byte)(238)))));
 			this.LabelDatapointType.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.LabelDatapointType.Location = new System.Drawing.Point(113, 120);
+			this.LabelDatapointType.Location = new System.Drawing.Point(141, 120);
 			this.LabelDatapointType.Margin = new System.Windows.Forms.Padding(0);
 			this.LabelDatapointType.Name = "LabelDatapointType";
-			this.LabelDatapointType.Size = new System.Drawing.Size(266, 30);
+			this.LabelDatapointType.Size = new System.Drawing.Size(329, 30);
 			this.LabelDatapointType.TabIndex = 7;
 			this.LabelDatapointType.Text = "-";
 			this.LabelDatapointType.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -247,10 +249,10 @@
 			// 
 			this.LabelDatapointUnit.AutoSize = true;
 			this.LabelDatapointUnit.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.LabelDatapointUnit.Location = new System.Drawing.Point(113, 150);
+			this.LabelDatapointUnit.Location = new System.Drawing.Point(141, 150);
 			this.LabelDatapointUnit.Margin = new System.Windows.Forms.Padding(0);
 			this.LabelDatapointUnit.Name = "LabelDatapointUnit";
-			this.LabelDatapointUnit.Size = new System.Drawing.Size(266, 30);
+			this.LabelDatapointUnit.Size = new System.Drawing.Size(329, 30);
 			this.LabelDatapointUnit.TabIndex = 8;
 			this.LabelDatapointUnit.Text = "-";
 			this.LabelDatapointUnit.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -260,10 +262,10 @@
 			this.LabelDatapointLastUpdate.AutoSize = true;
 			this.LabelDatapointLastUpdate.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(238)))), ((int)(((byte)(238)))), ((int)(((byte)(238)))));
 			this.LabelDatapointLastUpdate.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.LabelDatapointLastUpdate.Location = new System.Drawing.Point(113, 180);
+			this.LabelDatapointLastUpdate.Location = new System.Drawing.Point(141, 180);
 			this.LabelDatapointLastUpdate.Margin = new System.Windows.Forms.Padding(0);
 			this.LabelDatapointLastUpdate.Name = "LabelDatapointLastUpdate";
-			this.LabelDatapointLastUpdate.Size = new System.Drawing.Size(266, 30);
+			this.LabelDatapointLastUpdate.Size = new System.Drawing.Size(329, 30);
 			this.LabelDatapointLastUpdate.TabIndex = 9;
 			this.LabelDatapointLastUpdate.Text = "-";
 			this.LabelDatapointLastUpdate.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -283,7 +285,7 @@
 			this.tableLayoutPanel2.RowCount = 2;
 			this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
 			this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-			this.tableLayoutPanel2.Size = new System.Drawing.Size(379, 60);
+			this.tableLayoutPanel2.Size = new System.Drawing.Size(470, 60);
 			this.tableLayoutPanel2.TabIndex = 10;
 			// 
 			// LabelDatapointDescription
@@ -296,7 +298,7 @@
 			this.LabelDatapointDescription.Margin = new System.Windows.Forms.Padding(0);
 			this.LabelDatapointDescription.Name = "LabelDatapointDescription";
 			this.LabelDatapointDescription.Padding = new System.Windows.Forms.Padding(10, 0, 0, 0);
-			this.LabelDatapointDescription.Size = new System.Drawing.Size(379, 30);
+			this.LabelDatapointDescription.Size = new System.Drawing.Size(470, 30);
 			this.LabelDatapointDescription.TabIndex = 0;
 			this.LabelDatapointDescription.Text = "-";
 			this.LabelDatapointDescription.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -310,10 +312,43 @@
 			this.LabelDatapointName.Margin = new System.Windows.Forms.Padding(0);
 			this.LabelDatapointName.Name = "LabelDatapointName";
 			this.LabelDatapointName.Padding = new System.Windows.Forms.Padding(8, 0, 0, 0);
-			this.LabelDatapointName.Size = new System.Drawing.Size(379, 30);
+			this.LabelDatapointName.Size = new System.Drawing.Size(470, 30);
 			this.LabelDatapointName.TabIndex = 1;
 			this.LabelDatapointName.Text = "-";
 			this.LabelDatapointName.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			// 
+			// ChartDatapoint
+			// 
+			chartArea1.AlignmentOrientation = ((System.Windows.Forms.DataVisualization.Charting.AreaAlignmentOrientations)((System.Windows.Forms.DataVisualization.Charting.AreaAlignmentOrientations.Vertical | System.Windows.Forms.DataVisualization.Charting.AreaAlignmentOrientations.Horizontal)));
+			chartArea1.AxisX.IntervalAutoMode = System.Windows.Forms.DataVisualization.Charting.IntervalAutoMode.VariableCount;
+			chartArea1.AxisX.MajorGrid.LineDashStyle = System.Windows.Forms.DataVisualization.Charting.ChartDashStyle.Dash;
+			chartArea1.AxisX.ScaleBreakStyle.Enabled = true;
+			chartArea1.AxisY.InterlacedColor = System.Drawing.Color.White;
+			chartArea1.AxisY.MajorGrid.LineDashStyle = System.Windows.Forms.DataVisualization.Charting.ChartDashStyle.Dash;
+			chartArea1.AxisY.MinorTickMark.Enabled = true;
+			chartArea1.InnerPlotPosition.Auto = false;
+			chartArea1.InnerPlotPosition.Height = 89F;
+			chartArea1.InnerPlotPosition.Width = 91F;
+			chartArea1.InnerPlotPosition.X = 7F;
+			chartArea1.InnerPlotPosition.Y = 4F;
+			chartArea1.Name = "ChartAreaDatapoint";
+			chartArea1.Position.Auto = false;
+			chartArea1.Position.Height = 100F;
+			chartArea1.Position.Width = 100F;
+			this.ChartDatapoint.ChartAreas.Add(chartArea1);
+			this.tableLayoutPanel1.SetColumnSpan(this.ChartDatapoint, 2);
+			this.ChartDatapoint.Cursor = System.Windows.Forms.Cursors.Cross;
+			this.ChartDatapoint.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.ChartDatapoint.Location = new System.Drawing.Point(3, 243);
+			this.ChartDatapoint.Name = "ChartDatapoint";
+			series1.ChartArea = "ChartAreaDatapoint";
+			series1.Name = "Series1";
+			this.ChartDatapoint.Series.Add(series1);
+			this.ChartDatapoint.Size = new System.Drawing.Size(464, 334);
+			this.ChartDatapoint.TabIndex = 13;
+			this.ChartDatapoint.Text = "chart1";
+			title1.Name = "Title1";
+			this.ChartDatapoint.Titles.Add(title1);
 			// 
 			// DatapointTabControlAnalysis
 			// 
@@ -334,28 +369,13 @@
 			this.DatapointTabControlSettings.Text = "Datenpunk - Eigenschaften";
 			this.DatapointTabControlSettings.UseVisualStyleBackColor = true;
 			// 
-			// ChartDatapoint
-			// 
-			chartArea1.Name = "ChartArea1";
-			this.ChartDatapoint.ChartAreas.Add(chartArea1);
-			this.tableLayoutPanel1.SetColumnSpan(this.ChartDatapoint, 2);
-			this.ChartDatapoint.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.ChartDatapoint.Location = new System.Drawing.Point(3, 243);
-			this.ChartDatapoint.Name = "ChartDatapoint";
-			series1.ChartArea = "ChartArea1";
-			series1.Name = "Series1";
-			this.ChartDatapoint.Series.Add(series1);
-			this.ChartDatapoint.Size = new System.Drawing.Size(373, 300);
-			this.ChartDatapoint.TabIndex = 13;
-			this.ChartDatapoint.Text = "chart1";
-			// 
 			// DatapointControl
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.Controls.Add(this.DatapointTabControl);
 			this.Name = "DatapointControl";
-			this.Size = new System.Drawing.Size(393, 386);
+			this.Size = new System.Drawing.Size(484, 612);
 			this.DatapointTabControl.ResumeLayout(false);
 			this.DatapointTabControlOverview.ResumeLayout(false);
 			this.tableLayoutPanel1.ResumeLayout(false);
