@@ -1,10 +1,8 @@
-Seminarkurs-2014
-================
+# Seminarkurs-2014
 
 Luft- und Lautstärkeüberwachung
 
-Datenbank
----------
+## Datenbank
 
 Die Datenbankschemas befinden sich in den Dateien
 
@@ -18,8 +16,7 @@ Zum aufsetzen der Datenbank müssen 2 Schritte ausgeführt werden
 
 Alternativ kann zum erstellen der Datenbank bzw. der Tabellen eine grafische Oberfläche verwendet werden.
 
-C# Anwendung
-------------
+## C# Anwendung
 
 Beispiel zum senden eines Kommandos und zum entfangen einer Antwort: https://gist.github.com/FloeHerrmann/b5b00f89f3a8ccb7b036
 In unserem Fall müsste anstatt des Kommandos `C:GetData;` ein HTTP Request gesendet werden:
@@ -35,8 +32,7 @@ Host: 192.168.5.134
 Connection: close
 ```
 
-Arduino
--------
+## Arduino
 
 Verwendete URLs für das Abfragen von Werten und setzen von Grenzen
 
@@ -51,8 +47,30 @@ Verwendete URLs für das Abfragen von Werten und setzen von Grenzen
 
 Die Antworten des Arduino werden dabei im JSON Format (http://www.json.org/json-de.html) zurückgeliefert. Zum Beispiel liefert die URL `http://{IP-Adresse}/arduino/data` die Antwort `{"airQuality":"465","loudness":"70"}` zurück. Die Antworten des Arduino können deshalb mit jedem REST-Client (vielleicht http://restsharp.org) oder jedem JSON Parser (z.B. http://james.newtonking.com/json) verarbeitet werden
 
-Links
------
+### Verwendete Pins
+
+* `D0` Hardware Serial
+* `D1` Hardware Serial
+* `D2` -
+* `D3` -
+* `D4` SD Card Chip Select
+* `D5` TFT Display Chip Select
+* `D6` TFT Data/Command Control Pin
+* `D7` LED Output Pin
+* `D8` UART CO2 Sensor RX
+* `D9` UART CO2 Sensor TX
+* `D10` SPI Chip Select
+* `D11` SPI Data Pin
+* `D12` SPI Data Pin
+* `D13` SPI Serial Clock Pin
+* `A0` Touch Screen Y- Input Pin
+* `A1` Touch Screen X- Input Pin
+* `A2` Touch Screen Y+ Input Pin
+* `A3` Touch Screen X+ Input Pin
+* `A4` Loudness Input Pin
+* `A5` Temperature Input Pin
+
+## Links
 
 * Arduino Software: http://arduino.cc/en/Main/Software#toc3
 * Arduino Yun: http://arduino.cc/en/Main/ArduinoBoardYun#.Uyc4INzSdak
