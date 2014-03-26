@@ -1,150 +1,8 @@
 #include "pins_arduino.h"
 #include "wiring_private.h"
-#include <avr/pgmspace.h>
-#include <Point.h>
-#include <TouchScreen.h>
-#include <SPI.h>
-
-#define			SAMPLES					2
-#define			COMPARE					2
-#define			RXPLATE					300
-
-const uchar		TS_FONT_SPACING			= 2;
-const uchar		TS_PIXEL_BUFFER_SIZE	= 72;
-const uchar		TS_TOUCH_PRESSURE		= 10;
-const uint		TS_DISPLAY_WIDTH		= 240;
-const uint		TS_DISPLAY_HEIGHT		= 320;
-
-/*
- * Output Messages
- */
- /*
-char MSG_OK[]							= "OK";
-char MSG_FAILED[]						= "FAILED";
-char MSG_ERROR[]						= "ERROR";
-char MSG_FILE_NOT_FOUND[] 				= "FILE NOT FOUND";
-char MSG_FILE_NOT_OPEN[] 				= "FILE NOT OPEN";
-char MSG_BUFFER_TO_SMALL[] 				= "BUFFER TO SMALL";
-char MSG_SEEK_ERROR[] 					= "SEEK ERROR";
-char MSG_SECTION_NOT_FOUND[] 			= "SECTION NOT FOUND";
-char MSG_KEY_NOT_FOUND[] 				= "KEY NOT FOUND";
-char MSG_END_OF_FILE[] 					= "END OF FILE";
-char MSG_UNKNOWN_ERROR[] 				= "UNKNOWN ERROR";
-char MSG_UNKNOWN_ERROR_VALUE[] 			= "UNKNOWN ERROR VALUE";*/
-
-/*
- * Function for POINT class
- */
-Point::Point( void ) {
-	_x = _y = 0;
-}
-
-Point::Point( int x0 , int y0 , int z0 ) {
-	_x = x0;
-	_y = y0;
-	_z = z0;
-}
-
-bool Point::operator == ( Point p1 ) {
-	return ( ( p1._x == _x ) && ( p1._y == _y ) && ( p1._z == _z ) );
-}
-
-bool Point::operator!=(Point p1) { 
-	return ( ( p1._x != _x ) || ( p1._y != _y ) || ( p1._z != _z ) );
-}
-
-/*
- * Functions for TOUCHSCREEN class
- */
-
-Point TouchScreen::getPoint( void ) {
-	int x = 1;
-	int y = 1;
-	int z = 1;
-	int samples[ SAMPLES ];
-	uchar i, valid;
-
-	uchar xp_port = digitalPinToPort( _xp );
-	uchar yp_port = digitalPinToPort( _yp );
-	uchar xm_port = digitalPinToPort( _xm );
-	uchar ym_port = digitalPinToPort( _ym );
-
-	uchar xp_pin = digitalPinToBitMask( _xp );
-	uchar yp_pin = digitalPinToBitMask( _yp );
-	uchar xm_pin = digitalPinToBitMask( _xm );
-	uchar ym_pin = digitalPinToBitMask( _ym );
-
-	valid = 1;
-	pinMode( _yp , INPUT );
-	pinMode( _ym , INPUT );
-
-	*portOutputRegister( yp_port ) &= ~yp_pin;
-	*portOutputRegister( ym_port ) &= ~ym_pin;
-
-	pinMode( _xp , OUTPUT );
-	pinMode( _xm , OUTPUT );
-
-	*portOutputRegister( xp_port ) |= xp_pin;
-	*portOutputRegister( xm_port ) &= ~xm_pin;
-
-	for( i=0 ; i < SAMPLES; i++ ) {
-		samples[i] = analogRead(_yp);
-	}
-
-	int icomp = samples[0] > samples[1] ? samples[0] - samples[1] : samples[1] - samples[0];
-	if( icomp > COMPARE ) valid = 0;
-
-	x = ( samples[0] + samples[1] );
-
-	pinMode( _xp , INPUT );
-	pinMode( _xm , INPUT );
-	*portOutputRegister( xp_port ) &= ~xp_pin;
-
-	pinMode( _yp , OUTPUT );
-	*portOutputRegister( yp_port ) |= yp_pin;
-	pinMode( _ym , OUTPUT );
-
-	for( i=0 ; i < SAMPLES ; i++ ) {
-		samples[i] = analogRead(_xm);
-	}
-
-	icomp = samples[0] > samples[1] ? samples[0] - samples[1] : samples[1] - samples[0];
-	if( icomp > COMPARE ) valid = 0;
-
-	y = (samples[0]+samples[0]);
-	 
-	pinMode(_xp, OUTPUT);
-	 
-	*portOutputRegister(xp_port) &= ~xp_pin;
-	*portOutputRegister(ym_port) |=  ym_pin;
-	*portOutputRegister(yp_port) &= ~yp_pin;
-	
-	pinMode(_yp, INPUT);
-
-	int z1 = analogRead(_xm);
-	int z2 = analogRead(_yp);
- 
-	float rtouch = 0;
-
-	rtouch  = z2;
-	rtouch /= z1;
-	rtouch -= 1;
-	rtouch *= (2046-x)/2;
-	rtouch *= RXPLATE;
-	rtouch /= 1024;
-	z = rtouch;
-	if (! valid) {
-		z = 0;
-	}
-
-	return Point(x, y, z);
-}
-
-bool TouchScreen::isTouched( void ) {
-	Point p = getPoint();
-	if( p._z > TS_TOUCH_PRESSURE ) return true;
-	return false;
-}
+#include "avr/pgmspace.h"
+#include "TouchScreen.h"
+#include "SPI.h"
 
 void TouchScreen::setSlaveSelectHigh(){
 	#if defined(__AVR_ATmega1280__) || defined(__AVR_ATmega2560__)
@@ -198,33 +56,6 @@ void TouchScreen::setDataCommandLow(){
 	#endif
 }
 
-void TouchScreen::backlightOn() {
-	#if defined(__AVR_ATmega1280__) || defined(__AVR_ATmega2560__)
-		DDRH |= 0x10;
-		PORTH |=  0x10;
-	#elif defined(__AVR_ATmega32U4__)
-		DDRE |= 0x40;
-		PORTE |=  0x40;
-	#else
-		DDRD |= 0x80;
-		PORTD |=  0x80;
-	#endif
-}
-
-void TouchScreen::backlightOff() {
-	#if defined(__AVR_ATmega1280__) || defined(__AVR_ATmega2560__)
-		DDRH |= 0x10;
-		PORTH &=~ 0x10;
-	#elif defined(__AVR_ATmega32U4__)
-		DDRE |= 0x40;
-		PORTE &=~ 0x40;
-	#else
-		DDRD |= 0x80;
-		PORTD &=~ 0x80;
-	#endif
-}
-
-
 void TouchScreen::sendCMD( uchar index ) {
 	setDataCommandLow();
 	setSlaveSelectLow();
@@ -262,22 +93,10 @@ uchar TouchScreen::readRegister( uchar Addr , uchar xParameter ) {
 	return data;
 }
 
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-TouchScreen::TouchScreen( uchar xp , uchar xm , uchar yp , uchar ym ) {
-	_yp = yp;
-	_xm = xm;
-	_ym = ym;
-	_xp = xp;
+TouchScreen::TouchScreen( void ) {
 }
 
 void TouchScreen::init (void) {
-
-	_lineHeight8px = 13;
-	_lineHeight14px = 24;
-	_lineHeight18px = 26;
-	_lineHeight30px = 36;
-	_displayState = 1;
 
 	SPI.begin();
 	setSlaveSelectHigh();
@@ -392,58 +211,13 @@ void TouchScreen::init (void) {
 	clear();
 }
 
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
 void TouchScreen::clear( ) {
 	fillScreen( );
-	_currentLine = 0;
 }
 
 void TouchScreen::clear( uint color ) {
-	fillScreen( 0 , 239 , 0 , 319 , color );
-	_currentLine = 0;
+	fillScreen( TS_MIN_X , TS_MAX_X , TS_MIN_Y , TS_MAX_Y , color );
 }
-
-void TouchScreen::clearContent( uint color ){
-	setCol( _contentLeft , TS_DISPLAY_WIDTH - _contentRight );
-	setPage( _contentTop , TS_DISPLAY_HEIGHT - _contentBottom );
-	sendCMD( 0x2C );
-	
-	setDataCommandHigh();
-	setSlaveSelectLow();
-	ulong pixelAmount = ( (TS_DISPLAY_WIDTH - _contentRight) - _contentLeft ) * ( (TS_DISPLAY_HEIGHT - _contentBottom ) - _contentTop);
-	for( uint i = 0 ; i < (pixelAmount/2) ; i++ ) {
-		SPI.transfer( 255 );
-		SPI.transfer( 255 );
-		SPI.transfer( 255 );
-		SPI.transfer( 255 );
-	}
-	setSlaveSelectHigh();
-	_currentyPos = _contentTop;
-}
-
-void TouchScreen::clearBottom( uint color ){
-	fillScreen( 0 , 240 , 290 , TS_DISPLAY_HEIGHT , color );
-}
-
-uint TouchScreen::newLine14px(){
-	_currentyPos += _lineHeight14px;
-	return _currentyPos;
-}
-
-uchar TouchScreen::getLineHeight14px(){
-	return _lineHeight14px;
-}
-/*
-uchar TouchScreen::getLineHeight18px(){
-	return _lineHeight18px;
-}
-*/
-uint TouchScreen::currentLine(){
-	return _currentyPos;
-}
-
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 void TouchScreen::setCol( uint StartCol , uint EndCol ) {
 	sendCMD( 0x2A );
@@ -467,16 +241,6 @@ void TouchScreen::setPixel( uint poX , uint poY , uint color ) {
 	setXY( poX , poY );
 	sendData( color );
 }
-
-void TouchScreen::setContentArea( uint top , uint right , uint bottom , uint left ) {
-	_contentTop = top;
-	_currentyPos = top;
-	_contentRight = right;
-	_contentBottom = bottom;
-	_contentLeft = left;
-}
-
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 void TouchScreen::fillScreen(void) {
 	setCol( 0 , 239 );
@@ -661,78 +425,23 @@ void TouchScreen::fillCircle( int poX , int poY , int r , uint color ) {
 	} while( x <= 0 );
 }
 
-void TouchScreen::drawTraingle( int poX1 , int poY1 , int poX2 , int poY2 , int poX3 , int poY3 , uint color ) {
+void TouchScreen::drawTriangle( int poX1 , int poY1 , int poX2 , int poY2 , int poX3 , int poY3 , uint color ) {
 	drawLine( poX1 , poY1 , poX2 , poY2 , color );
 	drawLine( poX1 , poY1 , poX3 , poY3 , color );
 	drawLine( poX2 , poY2 , poX3 , poY3 , color );
 }
 
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-uchar TouchScreen::drawStringLeft14px( char *string , uint y , uint color , uint background ) {
-	drawString14px( string , _contentLeft , y , color , background );
-}
-
-uchar TouchScreen::drawStringLeft14px( String message , uint y , uint color , uint background ){
-	message.toCharArray( _displayBuffer , message.length() + 1 );
-	drawString14px( _displayBuffer , _contentLeft , y , color , background );
-}
-
-uchar TouchScreen::drawStringCenter14px( char *string , uint y , uint color , uint background ) {
-	uchar width = getWidth14px( string );
-	drawString14px( string , ( TS_DISPLAY_WIDTH - width ) / 2 , y , color , background );
-}
-
-uchar TouchScreen::drawStringRight14px( char *string , uint y , uint color , uint background ){
-	uchar width = getWidth14px( string );
-	drawString14px( string , TS_DISPLAY_WIDTH - _contentLeft - width , y , color , background );
-}
-
-uchar TouchScreen::drawStringRight14px( String message , uint y , uint color , uint background ){
-	message.toCharArray( _displayBuffer , message.length() + 1 );
-	uchar width = getWidth14px( _displayBuffer );
-	drawString14px( _displayBuffer , TS_DISPLAY_WIDTH - _contentLeft - width , y , color , background );
-}
-
-uchar TouchScreen::getWidth14px( char *string ){
-	int totalWidth = 0;
-	uchar width, widthTotal, xoffset;
-	while( *string ) {
-		uchar ASCII = *string++;
-		if( (ASCII < 32) || (ASCII>127) ) ASCII = '?' - 32;
-		else ASCII = ASCII - 32;
-		width = pgm_read_byte( &font_helv_14[ ASCII ][ 0 ] );
-		widthTotal = pgm_read_byte( &font_helv_14[ ASCII ][ 3 ] );
-		xoffset = pgm_read_byte( &font_helv_14[ ASCII ][ 4 ] );
-
-		totalWidth += xoffset + widthTotal;
-	}
-	totalWidth -= (widthTotal - width);
-	return totalWidth;
-}
-
-uchar TouchScreen::drawString14px( char *string , uint x , uint y , uint color , uint background ) {
-	//setSlaveSelectLow();
-	while( *string ) {
-		if( x < TS_DISPLAY_WIDTH ) {
-			x += drawChar14px( *string++ , x , y , color , background );
-		}
-	}
-	//setSlaveSelectHigh();
-	return x;
-}
-
-uchar TouchScreen::drawChar14px( uchar ASCII , uint x , uint y , uint color , uint background ) {
+uchar TouchScreen::drawChar8px( uchar ASCII , uint x , uint y , uint color , uint background ) {
 
 	if( (ASCII < 32) || (ASCII>127) ) ASCII = '?' - 32;
 	else ASCII = ASCII - 32;
 
-	uchar charWidth = pgm_read_byte( &font_helv_14[ ASCII ][ 0 ] );
-	uchar charHeight = pgm_read_byte( &font_helv_14[ ASCII ][ 1 ] );
-	uchar charData = pgm_read_byte( &font_helv_14[ ASCII ][ 2 ] );
-	uchar widthWithSpacing = pgm_read_byte( &font_helv_14[ ASCII ][ 3 ] );
-	uchar xoffset = pgm_read_byte( &font_helv_14[ ASCII ][ 4 ] );
-	uchar yoffset = pgm_read_byte( &font_helv_14[ ASCII ][ 5 ] );
+	uchar charWidth = pgm_read_byte( &font_helv_08[ ASCII ][ 0 ] );
+	uchar charHeight = pgm_read_byte( &font_helv_08[ ASCII ][ 1 ] );
+	uchar charData = pgm_read_byte( &font_helv_08[ ASCII ][ 2 ] );
+	uchar widthWithSpacing = pgm_read_byte( &font_helv_08[ ASCII ][ 3 ] );
+	uchar xoffset = pgm_read_byte( &font_helv_08[ ASCII ][ 4 ] );
+	uchar yoffset = pgm_read_byte( &font_helv_08[ ASCII ][ 5 ] );
 	uchar bytesPerLine = charData / charHeight;
 
 	if( xoffset == 254 ) { x -= 1; }
@@ -742,21 +451,8 @@ uchar TouchScreen::drawChar14px( uchar ASCII , uint x , uint y , uint color , ui
 	else { x += xoffset; }
 
 	setCol( x , x + widthWithSpacing - 1 );
-	/*
-	sendCmdWithoutSelect( 0x2A );
-	sendDataWithoutSelect( x );
-	sendDataWithoutSelect( x + widthWithSpacing - 1 );
-	*/
-	
-	setPage( y , y + _lineHeight30px - 1 );
-	/*
-	sendCmdWithoutSelect( 0x2B );
-	sendDataWithoutSelect( y );
-	sendDataWithoutSelect( y + _lineHeight14px - 1 );
-	*/
-
+	setPage( y , y + 13 );
 	sendCMD( 0x2C );
-	//sendCmdWithoutSelect( 0x2C );
 
 	uchar currentByte;
 
@@ -764,7 +460,7 @@ uchar TouchScreen::drawChar14px( uchar ASCII , uint x , uint y , uint color , ui
 		uint tempWidth = charWidth;
 		uint tempBits = charWidth;
 		for( uint bytes = 0 ; bytes < bytesPerLine ; bytes++ ) {
-			currentByte = pgm_read_byte( &font_helv_14[ ASCII ][ 6 + height * bytesPerLine + bytes ] );
+			currentByte = pgm_read_byte( &font_helv_08[ ASCII ][ 6 + height * bytesPerLine + bytes ] );
 			if( tempWidth > 8 ) {
 				tempBits = 8;
 				tempWidth -= 8;
@@ -774,16 +470,13 @@ uchar TouchScreen::drawChar14px( uchar ASCII , uint x , uint y , uint color , ui
 			for( uint w = 0 ; w < tempBits ; w++ ) {
 				if( bitRead( currentByte , 7 - w ) ) {
 					sendData( color );
-					//sendDataWithoutSelect( color );
 				} else {
 					sendData( background );
-					//sendDataWithoutSelect( background );
 				}
 			}
 			if( (bytes+1) == bytesPerLine ) {
 				for( uint width = 0 ; width < (widthWithSpacing - charWidth) ; width++ ) {
 					sendData( background );
-					//sendDataWithoutSelect( background );
 				}
 			}
 		}
@@ -796,64 +489,131 @@ uchar TouchScreen::drawChar14px( uchar ASCII , uint x , uint y , uint color , ui
 	else return widthWithSpacing + xoffset;
 }
 
-void TouchScreen::sleep(){
-	_displayState = 2;
-	backlightOff();
-	sendCMD(0x28);
-}
+uchar TouchScreen::drawChar8pxNoSpacing( uchar ASCII , uint x , uint y , uint color , uint background ) {
 
-void TouchScreen::wakeUp(){
-	_displayState = 1;
-	sendCMD(0x29);
-	backlightOn();
-}
+	if( (ASCII < 32) || (ASCII>127) ) ASCII = '?' - 32;
+	else ASCII = ASCII - 32;
 
-uint TouchScreen::touchPressure(){
-	return TS_TOUCH_PRESSURE;
-}
+	uchar charWidth = pgm_read_byte( &font_helv_08[ ASCII ][ 0 ] );
+	uchar charHeight = pgm_read_byte( &font_helv_08[ ASCII ][ 1 ] );
+	uchar charData = pgm_read_byte( &font_helv_08[ ASCII ][ 2 ] );
+	uchar widthWithSpacing = pgm_read_byte( &font_helv_08[ ASCII ][ 3 ] );
+	uchar xoffset = pgm_read_byte( &font_helv_08[ ASCII ][ 4 ] );
+	uchar yoffset = pgm_read_byte( &font_helv_08[ ASCII ][ 5 ] );
+	uchar bytesPerLine = charData / charHeight;
 
-bool TouchScreen::isOn() {
-	if( _displayState == 1 ) return true;
-	return false;
-}
+	if( xoffset == 254 ) { x -= 1; }
+	else if( xoffset == 253 ) { x -= 2; }
+	else if( xoffset == 252 ) { x -= 3; }
+	else if( xoffset == 251 ) { x -= 4; }
+	else { x += xoffset; }
 
-bool TouchScreen::isOff(){
-	if( _displayState == 0 ) return true;
-	return false;
-}
-
-bool TouchScreen::isSleeping(){
-	if( _displayState == 2 ) return true;
-	return false;
-}
-
-void TouchScreen::drawIcon( uint iconData[] , uint x , uint y , uint color , uint background ){
-	setSlaveSelectLow();
-
-	uint iconWidth = iconData[ 0 ];
-	uint iconHeight = iconData[ 1 ];
+	if( yoffset == 254 ) { y -= 1; }
+	else if( yoffset == 253 ) { y -= 2; }
+	else if( yoffset == 252 ) { y -= 3; }
+	else if( yoffset == 251 ) { y -= 4; }
+	else { y += yoffset; }
 
 	// setCol( x , x + width - 1 );
 	sendCmdWithoutSelect( 0x2A );
 	sendDataWithoutSelect( x );
-	sendDataWithoutSelect( x + iconWidth - 1 );
-	
+	sendDataWithoutSelect( x + charWidth - 1 );
+
 	// setPage( y , y + height - 1 );
 	sendCmdWithoutSelect( 0x2B );
 	sendDataWithoutSelect( y );
-	sendDataWithoutSelect( y + iconHeight - 1 );
+	sendDataWithoutSelect( y + charHeight - 1 );
 
 	sendCmdWithoutSelect( 0x2C );
 
-	for( uint height = 0 ; height < iconHeight ; height++ ) {
-		uint currentByte = iconData[ 2 + height ];
-		for( uint width = 0 ; width < iconWidth ; width++ ) {
-			if( bitRead( currentByte , (iconWidth-1) - width ) ) {
-				sendDataWithoutSelect( color );
+	uchar currentByte;
+	uchar currentByte02;
+	uchar currentBit;
+
+	for( uint height = 0 ; height < charHeight ; height++ ) {
+		uint tempWidth = charWidth;
+		uint tempBits = charWidth;
+		for( uint bytes = 0 ; bytes < bytesPerLine ; bytes++ ) {
+			currentByte = pgm_read_byte( &font_helv_08[ ASCII ][ 6 + height * bytesPerLine + bytes ] );
+			if( tempWidth > 8 ) {
+				tempBits = 8;
+				tempWidth -= 8;
 			} else {
-				sendDataWithoutSelect( background );
+				tempBits = tempWidth;
 			}
+			for( uint w = 0 ; w < tempBits ; w++ ) {
+				if( bitRead( currentByte , 7 - w ) ) {
+					sendDataWithoutSelect( color );
+				} else {
+					sendDataWithoutSelect( background );
+				}
+            }
+    	}
+    }
+
+	if( xoffset == 254 ) return widthWithSpacing - 1;
+	if( xoffset == 253 ) return widthWithSpacing - 2;
+	if( xoffset == 252 ) return widthWithSpacing - 3;
+	if( xoffset == 251 ) return widthWithSpacing - 4;
+	else return widthWithSpacing + xoffset;
+}
+
+uchar TouchScreen::drawString8px( char *string , uint x , uint y , uint color , uint background ) {
+	while( *string ) {
+		if( x < TS_DISPLAY_WIDTH ) {
+			x += drawChar8px( *string++ , x , y , color , background );
 		}
 	}
-	setSlaveSelectHigh();
+	return x;
+}
+
+uchar TouchScreen::drawString8px( String message , uint x , uint y , uint color , uint background ){
+	message.toCharArray( _displayBuffer , message.length() + 1 );
+	drawString8px( _displayBuffer , x , y , color , background );
+}
+
+uchar TouchScreen::drawStringCenter8px( char *string , uint y , uint color , uint background ){
+	uchar width = getWidth8px( string );
+	drawString8px( string , ( TS_DISPLAY_WIDTH - width ) / 2 , y , color , background );
+}
+
+uchar TouchScreen::drawStringCenter8px( String message , uint xStart , uint xEnd , uint y , uint color , uint background ){
+	message.toCharArray( _displayBuffer , message.length() + 1 );
+	drawStringCenter8px( _displayBuffer , xStart , xEnd , y , color , background );
+}
+
+uchar TouchScreen::drawStringCenter8px( char *string , uint xStart , uint xEnd , uint y , uint color , uint background ){
+	uchar width = getWidth8px( string );
+	drawString8px( string , xStart + ( (xEnd - xStart) - width ) / 2 , y , color , background );
+}
+
+uchar TouchScreen::drawStringCenter8px( String message , uint y , uint color , uint background ){
+	message.toCharArray( _displayBuffer , message.length() + 1 );
+	uchar width = getWidth8px( _displayBuffer );
+	drawString8px( _displayBuffer , ( TS_DISPLAY_WIDTH - width ) / 2 , y , color , background );
+}
+
+uchar TouchScreen::getWidth8px( char *string ){
+	int totalWidth = 0;
+	uchar width, widthTotal, xoffset;
+	while( *string ) {
+		uchar ASCII = *string++;
+		if( (ASCII < 32) || (ASCII>127) ) ASCII = '?' - 32;
+		else ASCII = ASCII - 32;
+		width = pgm_read_byte( &font_helv_08[ ASCII ][ 0 ] );
+		widthTotal = pgm_read_byte( &font_helv_08[ ASCII ][ 3 ] );
+		xoffset = pgm_read_byte( &font_helv_08[ ASCII ][ 4 ] );
+
+		totalWidth += xoffset + widthTotal;
+	}
+	totalWidth -= (widthTotal - width);
+	return totalWidth;
+}
+
+void TouchScreen::sleep(){
+	sendCMD( 0x28 );
+}
+
+void TouchScreen::wakeUp(){
+	sendCMD( 0x29 );
 }
