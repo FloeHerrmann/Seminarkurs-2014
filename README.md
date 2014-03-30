@@ -18,34 +18,42 @@ Alternativ kann zum erstellen der Datenbank bzw. der Tabellen eine grafische Obe
 
 ## C# Anwendung
 
-Beispiel zum senden eines Kommandos und zum entfangen einer Antwort: https://gist.github.com/FloeHerrmann/b5b00f89f3a8ccb7b036
-In unserem Fall müsste anstatt des Kommandos `C:GetData;` ein HTTP Request gesendet werden:
+### Daten abfragen
 
-```
-HTTP {URL} HTTP/1.1
-Host: {IP-Adresse}
-Connection: close
-```
-```
-HTTP /arduino/data HTTP/1.1
-Host: 192.168.5.134
-Connection: close
-```
+Beispiel zum senden eines Kommandos und zum entfangen einer Antwort: https://gist.github.com/FloeHerrmann/b5b00f89f3a8ccb7b036
+
+Um das Programm zum abfragen der Daten regelmäßig auszuführen sollte eine entsprechende Aufgabe erstellt werden:
+
+`SCHTASKS /Create /SC MINUTE /MO 5 /SD 03/30/2014 /ST 10:00:00 /TN ALM-Data-Service /TR C:\Service\ALM-Data-Service.exe`
+
+SCHTASKS Dokumentation: http://msdn.microsoft.com/en-us/library/windows/desktop/bb736357%28v=vs.85%29.aspx
 
 ## Arduino
 
-Verwendete URLs für das Abfragen von Werten und setzen von Grenzen
+Mit der neusten Version der Arduino Software wird nicht mehr die REST Schnittstelle des Arduino verwendent, sondern eigens definierte Kommandos: 
 
-* `http://{IP-Adresse}/arduino/info` Liefert die Informationen zum Sensor, z.B. MAC, IP, Software-Version, etc.
-* `http://{IP-Adresse}/arduino/data` Liefert die aktuellen Werte der Sensoren
-* `http://{IP-Adresse}/arduino/data/loudness` Liefert den aktuellen Lautstärke-Wert
-* `http://{IP-Adresse}/arduino/data/airquality` Liefert den aktuellen CO2-Wert
-* `http://{IP-Adresse}/arduino/airquality/` Liefert die aktuell gesetzte untere Grenze für den CO2-Wert zurück
-* `http://{IP-Adresse}/arduino/airquality/minimum/{Wert}` Setzt die untere Grenze für den CO2-Wert auf einen {Wert}
-* `http://{IP-Adresse}/arduino/loudness` Liefter die aktuell gesetzte obere Grenze für die Läutstärke zurück
-* `http://{IP-Adresse}/arduino/loudness/maximum/{Wert}` Setzt die obere Grenze für die Lautstärke auf einen {Wert}
+### Daten abfragen
 
-Die Antworten des Arduino werden dabei im JSON Format (http://www.json.org/json-de.html) zurückgeliefert. Zum Beispiel liefert die URL `http://{IP-Adresse}/arduino/data` die Antwort `{"airQuality":"465","loudness":"70"}` zurück. Die Antworten des Arduino können deshalb mit jedem REST-Client (vielleicht http://restsharp.org) oder jedem JSON Parser (z.B. http://james.newtonking.com/json) verarbeitet werden
+* `C:Data:Get;` Liefert Informationen zum Sensor;
+* `C:Data:Get;` Liefert die aktuellen Werte des Sensors
+* `C:Data:Get:CO2Concentration;` Liefert die aktuelle CO2 Konzentration
+* `C:Data:Get:Loudness;` Liefert die aktuelle Lautstärke
+* `C:Data:Get:Temperature;` Liefert die aktuelle Temperatur
+
+### Schwellenwert abfragen
+
+* `C:Threshold:Get;` Liefert die Schwellwerte für die CO2 Konzentration und die Lautstärke
+* `C:Threshold:Get:Loudness;` Liefert den Schwellwert für die Lautstärke
+* `C:Threshold:Get:CO2Concentration;` Liefert den Schwellwert für die CO2 Konzentration
+
+### Schwellenwert setzen
+
+* `C:Threshold:Set:Loudness:{Value};` Setzt den Schwellwert für die Lautstärke auf den Wert {Value}
+* `C:Threshold:Set:CO2Concentration:{Value};` Setzt den Schwellwert für die CO2 Konzentration auf den Wert {Value}
+
+### Antwort verarbeiten
+
+Die Antworten des Arduino werden dabei im JSON Format (http://www.json.org/json-de.html) zurückgeliefert. Die Antworten des Arduino können deshalb mit jedem REST-Client (vielleicht http://restsharp.org) oder jedem JSON Parser (z.B. http://james.newtonking.com/json) verarbeitet werden
 
 ### Verwendete Pins
 

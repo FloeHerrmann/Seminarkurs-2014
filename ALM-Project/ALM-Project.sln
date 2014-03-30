@@ -3,36 +3,45 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
 VisualStudioVersion = 12.0.30110.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ALM-Console-Application", "ALM-Console-Application\ALM-Console-Application.csproj", "{DBEE4997-5B2E-4779-AA2E-EC5597BF5E80}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ALM-API", "ALM-API\ALM-API.csproj", "{809E9D99-1D33-4BC6-8EC7-7C143B6DF4C5}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ALM-Interface", "ALM-Interface\ALM-Interface.csproj", "{170EE86B-6F24-4FA9-B2C0-37F758D1C174}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ALM-Example-Data", "ALM-Example-Data\ALM-Example-Data.csproj", "{9C929F27-B0E3-48D0-904A-11FAA1E212AA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ALM-Data-Service", "ALM-Data-Service\ALM-Data-Service.csproj", "{8274BDFA-A43D-4F83-9C84-432E879C24E2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
+		Final Release|Any CPU = Final Release|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{DBEE4997-5B2E-4779-AA2E-EC5597BF5E80}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DBEE4997-5B2E-4779-AA2E-EC5597BF5E80}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DBEE4997-5B2E-4779-AA2E-EC5597BF5E80}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DBEE4997-5B2E-4779-AA2E-EC5597BF5E80}.Release|Any CPU.Build.0 = Release|Any CPU
 		{809E9D99-1D33-4BC6-8EC7-7C143B6DF4C5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{809E9D99-1D33-4BC6-8EC7-7C143B6DF4C5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{809E9D99-1D33-4BC6-8EC7-7C143B6DF4C5}.Final Release|Any CPU.ActiveCfg = Release|Any CPU
+		{809E9D99-1D33-4BC6-8EC7-7C143B6DF4C5}.Final Release|Any CPU.Build.0 = Release|Any CPU
 		{809E9D99-1D33-4BC6-8EC7-7C143B6DF4C5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{809E9D99-1D33-4BC6-8EC7-7C143B6DF4C5}.Release|Any CPU.Build.0 = Release|Any CPU
 		{170EE86B-6F24-4FA9-B2C0-37F758D1C174}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{170EE86B-6F24-4FA9-B2C0-37F758D1C174}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{170EE86B-6F24-4FA9-B2C0-37F758D1C174}.Final Release|Any CPU.ActiveCfg = Release|Any CPU
+		{170EE86B-6F24-4FA9-B2C0-37F758D1C174}.Final Release|Any CPU.Build.0 = Release|Any CPU
 		{170EE86B-6F24-4FA9-B2C0-37F758D1C174}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{170EE86B-6F24-4FA9-B2C0-37F758D1C174}.Release|Any CPU.Build.0 = Release|Any CPU
 		{9C929F27-B0E3-48D0-904A-11FAA1E212AA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{9C929F27-B0E3-48D0-904A-11FAA1E212AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9C929F27-B0E3-48D0-904A-11FAA1E212AA}.Final Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9C929F27-B0E3-48D0-904A-11FAA1E212AA}.Final Release|Any CPU.Build.0 = Release|Any CPU
 		{9C929F27-B0E3-48D0-904A-11FAA1E212AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9C929F27-B0E3-48D0-904A-11FAA1E212AA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8274BDFA-A43D-4F83-9C84-432E879C24E2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8274BDFA-A43D-4F83-9C84-432E879C24E2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8274BDFA-A43D-4F83-9C84-432E879C24E2}.Final Release|Any CPU.ActiveCfg = Final Release|Any CPU
+		{8274BDFA-A43D-4F83-9C84-432E879C24E2}.Final Release|Any CPU.Build.0 = Final Release|Any CPU
+		{8274BDFA-A43D-4F83-9C84-432E879C24E2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8274BDFA-A43D-4F83-9C84-432E879C24E2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -35,6 +35,8 @@ namespace Gsmgh.Alm.Database {
 
 		List<AbstractObjectNode> GetAllAbstractNodes ();
 		List<DatapointNode> GetAllDatapointNodes ();
+		List<DeviceNode> GetAllDeviceNodes ();
+		List<DatapointNode> GetDatapointNodesByDeviceID ( Int64 DeviceID );
 		List<DatapointValueNode> GetDatapointValuesByDatapointID ( Int64 DatapointID , DateTime From , DateTime To );
 
 		Boolean DeleteAllObjectTreeData ();

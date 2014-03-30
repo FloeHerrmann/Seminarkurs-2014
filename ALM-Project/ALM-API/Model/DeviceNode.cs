@@ -29,6 +29,16 @@ namespace Gsmgh.Alm.Model {
 		private Int32 Port;
 
 		/// <summary>
+		/// Maximum Threshold for CO2 Concentration
+		/// </summary>
+		private Int32 CO2Threshold;
+
+		/// <summary>
+		/// Maximum Threshold for Loudness
+		/// </summary>
+		private Int32 LoudnessThreshold;
+
+		/// <summary>
 		/// Last connection to the device
 		/// </summary>
 		private DateTime LastConnection;
@@ -43,16 +53,18 @@ namespace Gsmgh.Alm.Model {
 		/// <summary>
 		/// Constructor using a ObjectTreeRow for initialization
 		/// </summary>
-		public DeviceNode ( ObjectTreeRow RootNodeRow ) {
-			this.SetID( RootNodeRow.GetObjectID() );
-			this.SetParentID( RootNodeRow.GetObjectParentID() );
+		public DeviceNode ( ObjectTreeRow DeviceNodeRow ) {
+			this.SetID( DeviceNodeRow.GetObjectID() );
+			this.SetParentID( DeviceNodeRow.GetObjectParentID() );
 			this.SetType( NODE_TYPE );
-			this.SetName( RootNodeRow.GetObjectName() );
-			this.SetDescription( RootNodeRow.GetObjectDescription() );
-			this.SetLastUpdated( RootNodeRow.GetObjectLastUpdated() );
-			this.SetIPAddress( RootNodeRow.GetDeviceIPAddress() );
-			this.SetPort( RootNodeRow.GetDevicePort() );
-			this.SetLastConnection( RootNodeRow.GetDeviceLastConnection() );
+			this.SetName( DeviceNodeRow.GetObjectName() );
+			this.SetDescription( DeviceNodeRow.GetObjectDescription() );
+			this.SetLastUpdated( DeviceNodeRow.GetObjectLastUpdated() );
+			this.SetCO2Threshold( DeviceNodeRow.GetCO2Threshold() );
+			this.SetLoudnessThreshold( DeviceNodeRow.GetLoudnessThreshold() );
+			this.SetIPAddress( DeviceNodeRow.GetDeviceIPAddress() );
+			this.SetPort( DeviceNodeRow.GetDevicePort() );
+			this.SetLastConnection( DeviceNodeRow.GetDeviceLastConnection() );
 		}
 
 		/// <summary>
@@ -81,6 +93,34 @@ namespace Gsmgh.Alm.Model {
 		/// </summary>
 		public Int32 GetPort () {
 			return this.Port;
+		}
+
+		/// <summary>
+		/// Set the CO2 threshold
+		/// </summary>
+		public void SetCO2Threshold ( Int32 CO2Threshold ) {
+			this.CO2Threshold = CO2Threshold;
+		}
+
+		/// <summary>
+		/// Get the CO2 threshold
+		/// </summary>
+		public Int32 GetCO2Threshold () {
+			return this.CO2Threshold;
+		}
+
+		/// <summary>
+		/// Set the loudness threshold
+		/// </summary>
+		public void SetLoudnessThreshold ( Int32 LoudnessThreshold ) {
+			this.LoudnessThreshold = LoudnessThreshold;
+		}
+
+		/// <summary>
+		/// Get the loudness threshold
+		/// </summary>
+		public Int32 GetLoudnessThreshold () {
+			return this.LoudnessThreshold;
 		}
 
 		/// <summary>

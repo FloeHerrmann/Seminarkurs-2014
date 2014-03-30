@@ -29,16 +29,24 @@ namespace Gsmgh.Alm.Database {
 		///		Open a connection to the database
 		/// </summary>
 		public void OpenConnection () {
-			// Open the database connection
-			this.Connection.Open();
+			try {
+				// Open the database connection
+				this.Connection.Open();
+			} catch( Exception ex ) {
+				throw ex;
+			}
 		}
 		
 		/// <summary>
 		///		Close the connection to the datbase
 		/// </summary>
 		public void CloseConnection () {
-			// Close the datbase connection
-			this.Connection.Close();
+			try {
+				// Close the datbase connection
+				this.Connection.Close();
+			} catch( Exception ex ) {
+				throw ex;
+			}
 		}
 
 		/// <summary>
@@ -293,8 +301,8 @@ namespace Gsmgh.Alm.Database {
 			//		[colum name] = [value]	> Set a column to the given value
 			// WHERE object_id = {0}		> Update all rows where the column object_id matches the given id
 			Command.CommandText = String.Format(
-				"INSERT INTO object_tree ( object_parent_id , object_type , object_name , object_description , object_last_updated , sensor_ip_address , sensor_port ) Values( {0} , {1} , '{2}' , '{3}' , '{4}' , '{5}' , '{6}' )" ,
-				Node.GetParentID() , DeviceNode.NODE_TYPE , Node.GetName() , Node.GetDescription() , Node.GetLastUpdated().ToString( "yyyy-MM-dd HH:mm:ss" ) , Node.GetIPAddress().ToString() , Node.GetPort()
+				"INSERT INTO object_tree ( object_parent_id , object_type , object_name , object_description , object_last_updated , sensor_ip_address , sensor_port , sensor_threshold_co2 , sensor_threshold_loudness ) Values( {0} , {1} , '{2}' , '{3}' , '{4}' , '{5}' , '{6}' , {7} , {8} )" ,
+				Node.GetParentID() , DeviceNode.NODE_TYPE , Node.GetName() , Node.GetDescription() , Node.GetLastUpdated().ToString( "yyyy-MM-dd HH:mm:ss" ) , Node.GetIPAddress().ToString() , Node.GetPort() , Node.GetCO2Threshold() , Node.GetLoudnessThreshold()
 			);
 			Command.Connection = this.Connection;
 
@@ -716,6 +724,54 @@ namespace Gsmgh.Alm.Database {
 			MySqlDataReader Reader;
 
 			Command.CommandText = String.Format( "SELECT * FROM object_tree WHERE object_type={0} ORDER BY object_name" , DatapointNode.NODE_TYPE );
+			Command.Connection = this.Connection;
+
+			Reader = Command.ExecuteReader();
+
+			// Read the answer
+			while( Reader.Read() ) {
+				string row = "";
+				for( int i = 0 ; i < ( Reader.FieldCount - 1 ) ; i++ )
+					row += Reader.GetValue( i ).ToString() + ",";
+				// RootNode = AbstracObjectNode
+				datapointNodes.Add( new DatapointNode( new ObjectTreeRow( row ) ) );
+			}
+			Reader.Close();
+
+			return datapointNodes;
+		}
+
+		public List<DeviceNode> GetAllDeviceNodes () {
+			List<DeviceNode> deviceNodes = new List<DeviceNode>();
+
+			MySqlCommand Command = this.Connection.CreateCommand();
+			MySqlDataReader Reader;
+
+			Command.CommandText = String.Format( "SELECT * FROM object_tree WHERE object_type={0} ORDER BY object_name" , DeviceNode.NODE_TYPE );
+			Command.Connection = this.Connection;
+
+			Reader = Command.ExecuteReader();
+
+			// Read the answer
+			while( Reader.Read() ) {
+				string row = "";
+				for( int i = 0 ; i < ( Reader.FieldCount - 1 ) ; i++ )
+					row += Reader.GetValue( i ).ToString() + ",";
+				// RootNode = AbstracObjectNode
+				deviceNodes.Add( new DeviceNode( new ObjectTreeRow( row ) ) );
+			}
+			Reader.Close();
+
+			return deviceNodes;
+		}
+
+		public List<DatapointNode> GetDatapointNodesByDeviceID ( Int64 DeviceID ) {
+			List<DatapointNode> datapointNodes = new List<DatapointNode>();
+
+			MySqlCommand Command = this.Connection.CreateCommand();
+			MySqlDataReader Reader;
+
+			Command.CommandText = String.Format( "SELECT * FROM object_tree WHERE object_type={0} AND object_parent_id={1} ORDER BY object_id" , DatapointNode.NODE_TYPE , DeviceID );
 			Command.Connection = this.Connection;
 
 			Reader = Command.ExecuteReader();

@@ -165,7 +165,7 @@ void loop() {
 	if( client ) {
 		// Let some time pass to receive all data
 		delay( 50 );
-		client.setTimeout( 5000 );
+		//client.setTimeout( 5000 );
 		// Receive the command
 		String command = client.readString();
 		// Trim the command
@@ -276,47 +276,52 @@ void processCommand( String command , YunClient client ) {
 		int EndIndex = command.lastIndexOf( ";" );
 		String value = command.substring( StartIndex + 1 , EndIndex );
 		processSetTresholdCommand( true , false , value , client );
+	} else {
+		String Response = "{\"State\":\"Unknown Command\"}";
+		client.println( Response );
 	}
 }
 
 // Processing the command to get data
 void processDataCommand( bool CO2 , bool Loudness , bool Temperature , YunClient client ) {
-	client.print( "{" );
+	String dataString = "{";
 	if ( CO2 == true) {
-		client.print( "\"CO2Concentration\":\"" );
-		client.print( CurrentCO2Concentration );
-		client.print( "\"" );
-		if( Loudness == true || Temperature == true ) client.print( "," );
+		dataString += "\"CO2Concentration\":\"";
+		dataString += CurrentCO2Concentration;
+		dataString += "\"";
+		if( Loudness == true || Temperature == true ) dataString += ",";
 	}
 	if( Loudness == true ) {
-		client.print( "\"Loudness\":\"");
-		client.print( CurrentLoudness );
-		client.print( "\"" );
-		if( Temperature == true ) client.print( "," );
+		dataString += "\"Loudness\":\"";
+		dataString += CurrentLoudness;
+		dataString += "\"";
+		if( Temperature == true ) dataString += ",";
 	}
 	if( Temperature == true ){
-		client.print( "\"Temperature\":\"" );
-		client.print( CurrentTemperature );
-		client.print( "\"" );
+		dataString += "\"Temperature\":\"";
+		dataString += CurrentTemperature;
+		dataString += "\"";
 	}
-	client.println( "}" );
+	dataString += "}";
+	client.println( dataString );
 }
 
 // Processing the command to get a treshold
 void processGetTresholdCommand( bool CO2 , bool Loudness , YunClient client ) {
-	client.print( "{" );
+	String dataString = "{";
 	if( CO2 == true ) {
-		client.print( "\"CO2Treshold\":\"" );
-		client.print( TresholdCO2Concentration );
-		client.print( "\"" );
-		if( Loudness == true ) client.print( "," );
+		dataString += "\"CO2Treshold\":\"";
+		dataString += TresholdCO2Concentration;
+		dataString += "\"";
+		if( Loudness == true ) dataString += ",";
 	}
 	if( Loudness == true ) {
-		client.print( "\"LoudnessTreshold\":\"");
-		client.print( CurrentLoudness );
-		client.print( "\"" );
+		dataString += "\"LoudnessTreshold\":\"";
+		dataString += CurrentLoudness;
+		dataString += "\"";
 	}
-	client.println( "}" );
+	dataString += "}";
+	client.println( dataString );
 }
 
 // Processing the command to set a treshold
@@ -377,6 +382,7 @@ int getCO2Concentration(){
 		int HighByte = Response[3];
 		int LowByte = Response[4];
 		unsigned long CO2Value = HighByte * 256 + LowByte;
+		if( CO2Value > MaximumTotalCO2Cocentration ) return (int)MaximumTotalCO2Cocentration;
 		return CO2Value;
 	} else {
 		long CO2Value = -900;

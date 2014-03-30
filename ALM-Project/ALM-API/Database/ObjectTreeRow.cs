@@ -13,7 +13,7 @@ namespace Gsmgh.Alm.Database {
 		/// </summary>
 		String[] ValueKeys = { 
 			"OBJECT_ID" , "OBJECT_PARENT_ID" , "OBJECT_TYPE" ,  "OBJECT_NAME" , "OBJECT_DESCRIPTION" , "OBJECT_LAST_UPDATED" ,
-			"SENSOR_IP_ADDRESS" , "SENSOR_PORT" , "SENSOR_LAST_CONNECTION" ,
+			"SENSOR_IP_ADDRESS" , "SENSOR_PORT" , "SENSOR_LAST_CONNECTION" , "SENSOR_THRESHOLD_CO2" , "SENSOR_THRESHOLD_LOUDNESS" ,
 			"DATAPOINT_TYPE" , "DATAPOINT_UNIT" , "DATAPOINT_LAST_VALUE" , "DATAPOINT_LAST_UPDATED"
 		};
 
@@ -100,6 +100,22 @@ namespace Gsmgh.Alm.Database {
 				return Int32.Parse( ObjectData[ "DATAPOINT_TYPE" ] );
 			} catch( Exception ) {
 				return 0;
+			}
+		}
+
+		public Int32 GetCO2Threshold () {
+			try {
+				return Int32.Parse( ObjectData[ "SENSOR_THRESHOLD_CO2" ] );
+			} catch( Exception ) {
+				return 10000;
+			}
+		}
+
+		public Int32 GetLoudnessThreshold () {
+			try {
+				return Int32.Parse( ObjectData[ "SENSOR_THRESHOLD_LOUDNESS" ] );
+			} catch( Exception ) {
+				return 1000;
 			}
 		}
 

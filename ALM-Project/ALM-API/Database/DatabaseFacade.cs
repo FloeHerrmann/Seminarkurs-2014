@@ -111,6 +111,14 @@ namespace Gsmgh.Alm.Database {
 			return this.DatabaseConnector.GetAllDatapointNodes();
 		}
 
+		public List<DeviceNode> GetAllDeviceNodes () {
+			return this.DatabaseConnector.GetAllDeviceNodes();
+		}
+
+		public List<DatapointNode> GetDatapointNodesByDeviceID ( Int64 DeviceID ) {
+			return this.DatabaseConnector.GetDatapointNodesByDeviceID( DeviceID );
+		}
+
 		public List<DatapointValueNode> GetDatapointValuesByDatapointID ( Int64 DatapointID , DateTime From , DateTime To ) {
 			return this.DatabaseConnector.GetDatapointValuesByDatapointID( DatapointID , From , To );
 		}

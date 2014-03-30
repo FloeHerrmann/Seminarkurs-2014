@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // Allgemeine Informationen über eine Assembly werden über die folgenden 
 // Attribute gesteuert. Ändern Sie diese Attributwerte, um die Informationen zu ändern,
 // die mit einer Assembly verknüpft sind.
-[assembly: AssemblyTitle( "ALM-Console-Application" )]
+[assembly: AssemblyTitle( "ALM-Data-Service" )]
 [assembly: AssemblyDescription( "" )]
 [assembly: AssemblyConfiguration( "" )]
 [assembly: AssemblyCompany( "" )]
-[assembly: AssemblyProduct( "ALM-Console-Application" )]
+[assembly: AssemblyProduct( "ALM-Data-Service" )]
 [assembly: AssemblyCopyright( "Copyright ©  2014" )]
 [assembly: AssemblyTrademark( "" )]
 [assembly: AssemblyCulture( "" )]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible( false )]
 
 // Die folgende GUID bestimmt die ID der Typbibliothek, wenn dieses Projekt für COM verfügbar gemacht wird
-[assembly: Guid( "ffc49974-6d62-4cfc-9ec8-3c826b5d2cce" )]
+[assembly: Guid( "a2508805-a579-47fd-b828-683753d74b87" )]
 
 // Versionsinformationen für eine Assembly bestehen aus den folgenden vier Werten:
 //

@@ -231,8 +231,10 @@ namespace ALM_Example_Data {
 				deviceNode.SetParentID( ParentID );
 				deviceNode.SetDescription( Name );
 				deviceNode.SetLastUpdated( DateTime.Now );
-				deviceNode.SetIPAddress( new IPAddress( new Byte[] { 192 , 168 , 5 , (Byte)random.Next( 1, 254 ) } ) );
+				deviceNode.SetIPAddress( new IPAddress( new Byte[] { 192 , 168 , 2 , 116 } ) );
 				deviceNode.SetPort( 10001 );
+				deviceNode.SetCO2Threshold( 1000 );
+				deviceNode.SetLoudnessThreshold( 80 );
 				Boolean inserted = Database.InsertNode( deviceNode );
 				if( inserted ) ConsoleWriteSuccess( deviceNode.ToString() );
 				else ConsoleWriteError( "Could not device node" );
@@ -249,11 +251,11 @@ namespace ALM_Example_Data {
 				DatapointNode datapointNode = new DatapointNode();
 				datapointNode.SetName( "Sauerstoff" );
 				datapointNode.SetParentID( ParentID );
-				datapointNode.SetDescription( "Sauerstoffgehalt im Raum" );
+				datapointNode.SetDescription( "CO2Concentration" );
 				datapointNode.SetLastUpdated( DateTime.Now );
-				datapointNode.SetDatapointType( DatapointNode.TYPE_FLOATING_POINT );
+				datapointNode.SetDatapointType( DatapointNode.TYPE_INTEGER );
 				datapointNode.SetUnit( "PPM" );
-				datapointNode.SetLastValue( random.NextDouble().ToString("0.00") );
+				datapointNode.SetLastValue( random.Next( 300 , 3000 ).ToString() );
 				datapointNode.SetLastValueUpdate( DateTime.Now );
 				Boolean inserted = Database.InsertNode( datapointNode );
 				if( inserted ) ConsoleWriteSuccess( datapointNode.ToString() );
@@ -268,11 +270,30 @@ namespace ALM_Example_Data {
 				DatapointNode datapointNode = new DatapointNode();
 				datapointNode.SetName( "Lautstärke" );
 				datapointNode.SetParentID( ParentID );
-				datapointNode.SetDescription( "Lautstärke im Raum" );
+				datapointNode.SetDescription( "Loudness" );
 				datapointNode.SetLastUpdated( DateTime.Now );
 				datapointNode.SetDatapointType( DatapointNode.TYPE_INTEGER );
 				datapointNode.SetUnit( "DB" );
 				datapointNode.SetLastValue( random.Next( 20 , 130 ).ToString() );
+				datapointNode.SetLastValueUpdate( DateTime.Now );
+				Boolean inserted = Database.InsertNode( datapointNode );
+				if( inserted ) ConsoleWriteSuccess( datapointNode.ToString() );
+				else ConsoleWriteError( "Could not insert root node" );
+			} catch( Exception ex ) {
+				ConsoleWriteError( ex.Message );
+			}
+
+			try {
+				Console.Write( "> Insert datapoint node..." );
+				Random random = new Random();
+				DatapointNode datapointNode = new DatapointNode();
+				datapointNode.SetName( "Temperatur" );
+				datapointNode.SetParentID( ParentID );
+				datapointNode.SetDescription( "Temperature" );
+				datapointNode.SetLastUpdated( DateTime.Now );
+				datapointNode.SetDatapointType( DatapointNode.TYPE_FLOATING_POINT );
+				datapointNode.SetUnit( "°C" );
+				datapointNode.SetLastValue( random.NextDouble().ToString( "0.00" ) );
 				datapointNode.SetLastValueUpdate( DateTime.Now );
 				Boolean inserted = Database.InsertNode( datapointNode );
 				if( inserted ) ConsoleWriteSuccess( datapointNode.ToString() );
