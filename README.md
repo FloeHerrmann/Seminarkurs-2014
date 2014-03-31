@@ -22,7 +22,7 @@ Alternativ kann zum erstellen der Datenbank bzw. der Tabellen eine grafische Obe
 
 Beispiel zum senden eines Kommandos und zum entfangen einer Antwort: https://gist.github.com/FloeHerrmann/b5b00f89f3a8ccb7b036
 
-Um das Programm zum abfragen der Daten regelmäßig auszuführen sollte eine entsprechende Aufgabe erstellt werden:
+Um das Programm zum abfragen der Daten regelmäßig auszuführen sollte eine entsprechende Aufgabe erstellt werden. Dazu die Eingabeauffordung aufrufen und das folgende Kommando eingeben:
 
 `SCHTASKS /Create /SC MINUTE /MO 5 /SD 03/30/2014 /ST 10:00:00 /TN ALM-Data-Service /TR C:\Service\ALM-Data-Service.exe`
 
@@ -34,7 +34,6 @@ Mit der neusten Version der Arduino Software wird nicht mehr die REST Schnittste
 
 ### Daten abfragen
 
-* `C:Data:Get;` Liefert Informationen zum Sensor;
 * `C:Data:Get;` Liefert die aktuellen Werte des Sensors
 * `C:Data:Get:CO2Concentration;` Liefert die aktuelle CO2 Konzentration
 * `C:Data:Get:Loudness;` Liefert die aktuelle Lautstärke

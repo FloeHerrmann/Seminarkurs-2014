@@ -4,10 +4,13 @@
 #include "YunClient.h"
 #include "TouchScreen.h"
 #include "SoftwareSerial.h"
-#include "EEPROMex.h"
+#include "avr/eeprom.h"
+#include "WatchdogTimer.h"
+
+const char FirmwareVersion[] = "1.2";
+const char FirmwareDate[] = "31.03.2014 10:01";
 
 // Define Colors
-
 #define FontColorBlack 0x0000
 #define FontColorWhite 0xFFFF
 #define FontColorLightRed 0xE5B5
@@ -45,7 +48,7 @@
 #define TopBarHeight 20
 
 // Time between two measurements/samples
-#define SampleTime 5000
+#define SampleTime 1000
 
 // Define Input Pins
 #define LEDPin 7
@@ -85,10 +88,18 @@ TouchScreen Display = TouchScreen( );
 // Object to access the CO2 sensor
 SoftwareSerial CO2Sensor( CO2SensorRx , CO2SensorTx );
 
+// Watchdog
+WatchdogTimer Watchdog = WatchdogTimer();
+
 // Command sequence to read data from CO2 Sensor
 byte CO2SensorRead[] = { 0xFE , 0X44 , 0X00 , 0X08 , 0X02 , 0X9F , 0X25 };
 
+String networkInfo;
+
 void setup() {
+
+	// Enable Watchdog
+	Watchdog.Enable( WATCHDOG_8S );
 
 	// Open the serial connection to the CO2 sensor
 	CO2Sensor.begin( 9600 );
@@ -96,45 +107,81 @@ void setup() {
 	// Initialize and clear the display
 	Display.init();
 	Display.clear();
+	Display.drawRectangle( 48 , 168 , 144 , 144 , FillColorBlue );
+
+	delay( 500 );
+
+	drawProgressBar( 6 );
+
+	// Load maximum CO2 concentration treshold from EEPROM
+	TresholdCO2Concentration = EEPROMReadInt( CO2Cell );
+	MaximumCO2BarHeight = ((float)TresholdCO2Concentration/MaximumTotalCO2Cocentration) * ChartBarHeight;
+
+	drawProgressBar( 20 );
+
+	// Load maximum loudness treshold from EEPROm
+	TresholdLoudness = EEPROMReadInt( LoudnessCell );
+	MaximumLoudnessBarHeight = ((float)TresholdLoudness/MaximumTotalLoudness) * ChartBarHeight;
+
+	drawProgressBar( 34 );
+
+	// Reset Watchdog
+	Watchdog.Reset();
 	
 	// Flash LED on the arduino to indicate the programm is running
 	pinMode( 13 , OUTPUT );
-	digitalWrite( 13 , LOW );
-	delay( 500 );
-	for( int i = 0 ; i < 3 ; i++ ) {
+	for( int i = 0 ; i < 2 ; i++ ) {
 		digitalWrite( 13 , HIGH );
 		delay( 500 );
 		digitalWrite( 13 , LOW );
 		delay( 500 );
 	}
 
-	// Load maximum CO2 concentration treshold from EEPROM
-	TresholdCO2Concentration = 1000;//EEPROM.readInt( CO2Cell );
-	MaximumCO2BarHeight = ((float)TresholdCO2Concentration/MaximumTotalCO2Cocentration) * ChartBarHeight;
-
-	// Load maximum loudness treshold from EEPROm
-	TresholdLoudness = 500;//EEPROM.readInt( LoudnessCell );
-	MaximumLoudnessBarHeight = ((float)TresholdLoudness/MaximumTotalLoudness) * ChartBarHeight;
+	// Reset Watchdog
+	Watchdog.Reset();
 
 	// Starting the Bridge
 	Bridge.begin();
+
+	// Reset Watchdog
+	Watchdog.Reset();
 	
+	drawProgressBar( 62 );
+
 	// Flash LED on the arduino to indicate the bridge is running
 	digitalWrite( 13 , HIGH );
 	delay( 1000 );
 	digitalWrite( 13 , LOW );
 	delay( 1000 );
 
+	// Reset Watchdog
+	Watchdog.Reset();
+
 	// Starting the YunServer
 	Server.noListenOnLocalhost();
 	Server.begin();
+
+	// Reset Watchdog
+	Watchdog.Reset();
 	
 	// Set LED on the arduino to indicate the server is running
 	digitalWrite( 13 , HIGH );
 
-	// Draw Header
-	//Display.fillRectangle( 0 , TopBarHeight , FillColorBlue );
-	//Display.drawStringCenter8px( "Air-Loudness-Monitoring" , 5 , FontColorWhite , FillColorBlue );
+	drawProgressBar( 90 );
+
+	// Get current Values
+	CurrentCO2Concentration = getCO2Concentration();
+	CurrentLoudness = getLoudness();
+	CurrentTemperature = getTemperature();
+
+	// Reset Watchdog
+	Watchdog.Reset();
+
+	drawProgressBar( 100 );
+
+	delay( 500 );
+
+	Display.clear();
 	
 	// Frame for the CO2 Concentration bar
 	Display.drawRectangle( 20 , ChartStartY , ChartBarWidth , ChartBarHeight , FontColorBlack );
@@ -143,11 +190,6 @@ void setup() {
 	// Frame for the loudness bar
 	Display.drawRectangle( 130 , ChartStartY , ChartBarWidth , ChartBarHeight , FontColorBlack );
 	//Display.drawStringCenter8px( "Loudness" , 130 , 220 , 280 , FontColorBlack , FillColorWhite );
-
-	// Get current Values
-	CurrentCO2Concentration = getCO2Concentration();
-	CurrentLoudness = getLoudness();
-	CurrentTemperature = getTemperature();
 
 	// Update the display
 	updateDisplay();
@@ -158,6 +200,9 @@ void setup() {
 
 void loop() {
 
+	// Reset Watchdog
+	Watchdog.Reset();
+
 	// Check if there is a client
 	YunClient client = Server.accept();
 
@@ -165,15 +210,15 @@ void loop() {
 	if( client ) {
 		// Let some time pass to receive all data
 		delay( 50 );
-		//client.setTimeout( 5000 );
+		client.setTimeout( 2000 );
 		// Receive the command
 		String command = client.readString();
 		// Trim the command
 		command.trim();
 		// Process the command
 		processCommand( command , client );
-		// Stop client connection
-		client.stop();
+		// Reset Watchdog
+		Watchdog.Reset();
 	}
 	
 	// Check time between the now() and the last measurement
@@ -219,13 +264,10 @@ void updateDisplay( ) {
 	} else {
 		Display.fillRectangle( StartPosX , StartPosY + CO2Offset , InnerBarWidth , CO2BarHeight , FillColorDarkGreen );
 	}
-	/*
-	String CO2Value = "   ";
-	CO2Value += CurrentCO2Concentration;
-	CO2Value += "ppm   ";
-	Display.drawStringCenter8px( CO2Value , 20 , 110 , 250 , FontColorBlack , FillColorDarkGreen );
-	*/
 
+	//String CO2Value = "" + CurrentCO2Concentration;
+	//Display.drawStringCenter8px( CO2Value , 20 , 110 , 250 , FontColorBlack , FillColorDarkGreen );
+	
 	float LoudnessPercentage = (float)CurrentLoudness / MaximumTotalLoudness;
 	int LoudnessBarHeight = InnerBarHeight * LoudnessPercentage;
 	int LoudnessOffset = InnerBarHeight - LoudnessBarHeight;
@@ -239,13 +281,6 @@ void updateDisplay( ) {
 	} else {
 		Display.fillRectangle( StartPosX , StartPosY + LoudnessOffset , InnerBarWidth , LoudnessBarHeight , FillColorDarkGreen );
 	}
-
-	/*
-	String LoudnessValue = "   ";
-	LoudnessValue += CurrentLoudness;
-	LoudnessValue += "db   ";
-	Display.drawStringCenter8px( CO2Value , 130 , 220 , 250 , FontColorBlack , FillColorDarkGreen );
-	*/
 }
 
 // Processing the received command
@@ -276,9 +311,17 @@ void processCommand( String command , YunClient client ) {
 		int EndIndex = command.lastIndexOf( ";" );
 		String value = command.substring( StartIndex + 1 , EndIndex );
 		processSetTresholdCommand( true , false , value , client );
+	} else if( command.indexOf( "C:Device:Reset;") != -1 ) {
+		client.println( "{\"State\":\"OK\"}" );
+		client.flush();
+		client.stop();
+		delay( 10 * 1000 );
+	} else if( command.indexOf( "C:Device:Info;") != -1 ) {
+		processInfoCommand( client );
 	} else {
-		String Response = "{\"State\":\"Unknown Command\"}";
-		client.println( Response );
+		client.println( "{\"State\":\"Unknown Command\"}" );
+		client.flush();
+		client.stop();
 	}
 }
 
@@ -304,6 +347,8 @@ void processDataCommand( bool CO2 , bool Loudness , bool Temperature , YunClient
 	}
 	dataString += "}";
 	client.println( dataString );
+	client.flush();
+	client.stop();
 }
 
 // Processing the command to get a treshold
@@ -317,11 +362,13 @@ void processGetTresholdCommand( bool CO2 , bool Loudness , YunClient client ) {
 	}
 	if( Loudness == true ) {
 		dataString += "\"LoudnessTreshold\":\"";
-		dataString += CurrentLoudness;
+		dataString += TresholdLoudness;
 		dataString += "\"";
 	}
-	dataString += "}";
+	dataString += "}" ;
 	client.println( dataString );
+	client.flush();
+	client.stop();
 }
 
 // Processing the command to set a treshold
@@ -329,14 +376,30 @@ void processSetTresholdCommand( bool CO2 , bool Loudness , String value , YunCli
 	if( CO2 == true ) {
 	 	TresholdCO2Concentration = value.toInt();
 	 	MaximumCO2BarHeight = ((float)TresholdCO2Concentration/MaximumTotalCO2Cocentration) * ChartBarHeight;
-	 	EEPROM.updateInt( CO2Cell , TresholdCO2Concentration );
+	 	EEPROMWriteInt( CO2Cell , TresholdCO2Concentration );
 	}
 	if( Loudness == true ) {
 		TresholdLoudness = value.toInt();
 		MaximumLoudnessBarHeight = ((float)TresholdLoudness/MaximumTotalLoudness) * ChartBarHeight;
-		EEPROM.updateInt( LoudnessCell , TresholdLoudness );
+		EEPROMWriteInt( LoudnessCell , TresholdLoudness );
 	}
 	processGetTresholdCommand( CO2 , Loudness , client );
+}
+
+void processInfoCommand( YunClient client ){
+	String dataString = "{\"FirmwareVersion\":\"";
+	dataString += FirmwareVersion;
+	dataString += "\",\"FirmwareDate\":\"";
+	dataString += FirmwareDate;
+	dataString += "\"}";
+	client.println( dataString );
+	client.flush();
+	client.stop();
+}
+
+
+void drawProgressBar( unsigned char percentage ) {
+	Display.fillRectangle( 50 , 170 , int( float(percentage) * 1.4 ) , 10 , FillColorBlue );
 }
 
 // Get the current temperature
@@ -391,4 +454,20 @@ int getCO2Concentration(){
 			CO2Sensor.read();
 		}
 	}
+}
+
+void EEPROMWriteInt( int address , int value ) {
+	int currentValue = EEPROMReadInt( value );
+	if( value != currentValue ) {
+		byte lowByte = ((value >> 0) & 0xFF);
+		byte highByte = ((value >> 8) & 0xFF);
+		eeprom_write_byte((unsigned char *) address, lowByte);
+		eeprom_write_byte((unsigned char *) address, highByte);
+	}
+}
+
+unsigned int EEPROMReadInt( int address ) {
+	byte lowByte = eeprom_read_byte((unsigned char *) address);
+	byte highByte = eeprom_read_byte((unsigned char *) address);
+	return ((lowByte << 0) & 0xFF) + ((highByte << 8) & 0xFF00);
 }
