@@ -1,54 +1,75 @@
-#include "SPI.h"
 #include "Bridge.h"
 #include "YunServer.h"
 #include "YunClient.h"
-#include "TouchScreen.h"
 #include "SoftwareSerial.h"
 #include "avr/eeprom.h"
-#include "WatchdogTimer.h"
+#include "avr/wdt.h"
+#include "SPI.h"
 
-const char FirmwareVersion[] = "1.2";
-const char FirmwareDate[] = "31.03.2014 10:01";
+#define uchar uint8_t
+#define uint uint16_t
+#define ulong uint32_t
+
+#define SLAVE_SELECT_LOW  {DDRC |= 0x40;PORTC &=~ 0x40;}
+#define SLAVE_SELECT_HIGH {DDRC |= 0x40;PORTC |=  0x40;}
+#define DATA_COMMAND_LOW  {DDRD |= 0x80;PORTD &=~ 0x80;}
+#define DATA_COMMAND_HIGH {DDRD |= 0x80;PORTD |=  0x80;}
+
+#define SCREEN_MIN_X 0
+#define SCREEN_MAX_X 239
+#define SCREEN_MIN_Y 0
+#define SCREEN_MAX_Y 319
+
+uchar numbers[10][16] = {
+	{8,10, 60,126,102,195,195,195,195,195,195,195,102,126,60},
+	{5,7,  24,248,248,24,24,24,24,24,24,24,24,24,24},
+	{8,10, 60,254,195,3,7,14,28,56,112,224,192,255,255},
+	{8,10, 62,127,195,195,6,28,30,7,3,195,199,126,60},
+	{8,10, 6,14,30,54,102,198,198,255,255,6,6,6,6,6},
+	{8,10, 254,254,192,192,252,254,199,3,3,195,199,254,124},
+	{8,10, 60,127,99,192,192,220,254,195,195,195,227,126,60},
+	{8,10, 255,255,3,6,12,12,24,24,48,48,96,96,96},
+	{8,10, 60,126,231,195,195,102,126,231,195,195,231,126,60},
+	{8,10, 60,126,199,195,195,195,127,59,3,3,198,254,124},
+};
+
+uchar Chars[10][16] = {
+	{8,10, 192,192,192,192,192,192,192,192,192,192,192,255,255}, // L
+	{8,10, 0,0,0,195,195,195,195,195,195,195,199,255,123}, // u
+	{6,8, 28,60,48,48,252,252,48,48,48,48,48,48,48}, // f
+	{6,8, 48,48,48,252,252,48,48,48,48,48,48,60,28}, // t
+	{8,10,  0,0,0,123,255,199,195,195,195,195,199,255,123}, //a
+	{7,9, 0,0,0,60,126,198,192,252,62,6,198,252,120}, // s
+	{8,10,  195,195,0,123,255,199,195,195,195,195,199,255,123}, //ä
+	{5,7, 0,0,0,216,216,224,192,192,192,192,192,192,192}, // r
+	{8,10, 192,192,192,198,204,216,240,248,216,204,206,198,199}, // k
+	{8,8, 0,0,0,60,126,195,195,255,192,192,227,127,60}, // e
+};
 
 // Define Colors
-#define FontColorBlack 0x0000
-#define FontColorWhite 0xFFFF
-#define FontColorLightRed 0xE5B5
-#define FontColorRed 0xD9A2
-#define FontColorBlue 0x0339
-#define FontColorDarkGray 0x20E4
-#define FontColorLightGray 0x8410
-#define FontColorDarkGreen 0x07E0
-#define FontColorGreen 0x858E
-#define FontColorCyan 0x6679
-#define FontColorLightPurple 0xB41
-#define FontColorPurple 0x826
-
-#define FillColorBlack 0x0000
-#define FillColorWhite 0xFFFF
-#define FillColorLightRed 0xE5B5
-#define FillColorRed 0xD9A2
-#define FillColorBlue 0x0339
-#define FillColorDarkGray 0x20E4
-#define FillColorLightGray 0x8410
-#define FillColorDarkGreen 0x07E0
-#define FillColorGreen 0x858E
-#define FillColorCyan 0x6679
-#define FillColorLightPurple 0xB415
-#define FillColorPurple 0x826F
+#define ColorBlack 0x0000
+#define ColorWhite 0xFFFF
+#define ColorLightRed 0xE5B5
+#define ColorRed 0xD9A2
+#define ColorBlue 0x0339
+#define ColorDarkGray 0x20E4
+#define ColorLightGray 0x8410
+#define ColorDarkGreen 0x858E
+#define ColorGreen 0x07E0
+#define ColorLightPurple 0xB415
+#define ColorCyan 0x6679
+#define ColorPurple 0x826F
 
 #define MaximumTotalLoudness 1023.0
 #define MaximumTotalCO2Cocentration 3000.0
 
 // Data for display
-#define ChartBarHeight 240
-#define ChartBarWidth 90
-#define ChartBarMargin 2
-#define ChartStartY 30
-#define TopBarHeight 20
+#define ChartBarMargin 10
+#define ChartBarWidth (240 - 3*ChartBarMargin)/2
+#define ChartBarHeight (320 - ChartBarMargin - 40)
 
 // Time between two measurements/samples
-#define SampleTime 1000
+#define SampleTime 5000
 
 // Define Input Pins
 #define LEDPin 7
@@ -83,113 +104,95 @@ float CurrentTemperature;
 YunServer Server( 10001 );
 
 // Object to access the display
-TouchScreen Display = TouchScreen( );
+// TouchScreen Display = TouchScreen( );
 
 // Object to access the CO2 sensor
 SoftwareSerial CO2Sensor( CO2SensorRx , CO2SensorTx );
 
-// Watchdog
-WatchdogTimer Watchdog = WatchdogTimer();
-
 // Command sequence to read data from CO2 Sensor
-byte CO2SensorRead[] = { 0xFE , 0X44 , 0X00 , 0X08 , 0X02 , 0X9F , 0X25 };
+const byte CO2SensorRead[] = { 0xFE , 0X44 , 0X00 , 0X08 , 0X02 , 0X9F , 0X25 };
 
-String networkInfo;
+char DisplayBuffer[12];
+
+const char FirmwareVersion[] = "1.2";
+const char FirmwareDate[] = "31.03.2014 10:01";
 
 void setup() {
 
-	// Enable Watchdog
-	Watchdog.Enable( WATCHDOG_8S );
-
 	// Open the serial connection to the CO2 sensor
 	CO2Sensor.begin( 9600 );
-	
-	// Initialize and clear the display
-	Display.init();
-	Display.clear();
-	Display.drawRectangle( 48 , 168 , 144 , 144 , FillColorBlue );
 
+	// Initialize and clear the display
+	Init();
+	Clear();
+	DrawRectangle( 48 , 168 , 144 , 14 , ColorBlue );
+	drawProgressBar( 6 );
 	delay( 500 );
 
-	drawProgressBar( 6 );
-
 	// Load maximum CO2 concentration treshold from EEPROM
-	TresholdCO2Concentration = EEPROMReadInt( CO2Cell );
-	MaximumCO2BarHeight = ((float)TresholdCO2Concentration/MaximumTotalCO2Cocentration) * ChartBarHeight;
-
+	TresholdCO2Concentration = EepromReadInt( CO2Cell );
+	// When no threshold is defined, set default
+	if( TresholdCO2Concentration == -1 ) TresholdCO2Concentration = 1500;
+	MaximumCO2BarHeight = (TresholdCO2Concentration/MaximumTotalCO2Cocentration) * ChartBarHeight;
 	drawProgressBar( 20 );
 
 	// Load maximum loudness treshold from EEPROm
-	TresholdLoudness = EEPROMReadInt( LoudnessCell );
-	MaximumLoudnessBarHeight = ((float)TresholdLoudness/MaximumTotalLoudness) * ChartBarHeight;
-
+	TresholdLoudness = EepromReadInt( LoudnessCell );
+	// When no threshold is defined, set default
+	if( TresholdLoudness == -1 ) TresholdLoudness = 800;
+	MaximumLoudnessBarHeight = (TresholdLoudness/MaximumTotalLoudness) * ChartBarHeight;
 	drawProgressBar( 34 );
-
-	// Reset Watchdog
-	Watchdog.Reset();
-	
-	// Flash LED on the arduino to indicate the programm is running
-	pinMode( 13 , OUTPUT );
-	for( int i = 0 ; i < 2 ; i++ ) {
-		digitalWrite( 13 , HIGH );
-		delay( 500 );
-		digitalWrite( 13 , LOW );
-		delay( 500 );
-	}
-
-	// Reset Watchdog
-	Watchdog.Reset();
 
 	// Starting the Bridge
 	Bridge.begin();
-
-	// Reset Watchdog
-	Watchdog.Reset();
-	
 	drawProgressBar( 62 );
-
-	// Flash LED on the arduino to indicate the bridge is running
-	digitalWrite( 13 , HIGH );
-	delay( 1000 );
-	digitalWrite( 13 , LOW );
-	delay( 1000 );
-
-	// Reset Watchdog
-	Watchdog.Reset();
 
 	// Starting the YunServer
 	Server.noListenOnLocalhost();
 	Server.begin();
-
-	// Reset Watchdog
-	Watchdog.Reset();
-	
-	// Set LED on the arduino to indicate the server is running
-	digitalWrite( 13 , HIGH );
-
 	drawProgressBar( 90 );
+
+	// Enable Watchdog
+	WatchdogEnable();
+
+	pinMode( 13 , OUTPUT );
+	digitalWrite( 13 , HIGH );
 
 	// Get current Values
 	CurrentCO2Concentration = getCO2Concentration();
 	CurrentLoudness = getLoudness();
 	CurrentTemperature = getTemperature();
-
-	// Reset Watchdog
-	Watchdog.Reset();
-
 	drawProgressBar( 100 );
+	WatchdogReset();
 
-	delay( 500 );
-
-	Display.clear();
+	delay( 1000 );
+	Clear();
 	
 	// Frame for the CO2 Concentration bar
-	Display.drawRectangle( 20 , ChartStartY , ChartBarWidth , ChartBarHeight , FontColorBlack );
-	//Display.drawStringCenter8px( "Air" , 20 , 110 , 280 , FontColorBlack , FillColorWhite );
+	DrawRectangle( ChartBarMargin , ChartBarMargin , ChartBarWidth , ChartBarHeight , ColorBlack );
+	// Display.drawStringCenter8px( "Air" , 20 , 110 , 280 , ColorBlack , ColorWhite );
 
 	// Frame for the loudness bar
-	Display.drawRectangle( 130 , ChartStartY , ChartBarWidth , ChartBarHeight , FontColorBlack );
-	//Display.drawStringCenter8px( "Loudness" , 130 , 220 , 280 , FontColorBlack , FillColorWhite );
+	DrawRectangle( ChartBarWidth + (2*ChartBarMargin) , ChartBarMargin , ChartBarWidth , ChartBarHeight , ColorBlack );
+	// Display.drawStringCenter8px( "Loudness" , 130 , 220 , 280 , ColorBlack , ColorWhite );
+
+	int PosX = ChartBarMargin + (( ChartBarWidth - 35 )/2);
+	PosX += DrawCharFromArray( Chars[0] , PosX , SCREEN_MAX_Y - 24 , ColorBlack , ColorWhite );
+	PosX += DrawCharFromArray( Chars[1] , PosX , SCREEN_MAX_Y - 24 , ColorBlack , ColorWhite );
+	PosX += DrawCharFromArray( Chars[2] , PosX , SCREEN_MAX_Y - 24 , ColorBlack , ColorWhite );
+	PosX += DrawCharFromArray( Chars[3] , PosX , SCREEN_MAX_Y - 24 , ColorBlack , ColorWhite );
+	
+	PosX = ( 2 * ChartBarMargin + ChartBarWidth ) + (( ChartBarWidth - 90 )/2);
+	PosX += DrawCharFromArray( Chars[0] , PosX , SCREEN_MAX_Y - 24 , ColorBlack , ColorWhite );
+	PosX += DrawCharFromArray( Chars[4] , PosX , SCREEN_MAX_Y - 24 , ColorBlack , ColorWhite );
+	PosX += DrawCharFromArray( Chars[1] , PosX , SCREEN_MAX_Y - 24 , ColorBlack , ColorWhite );
+	PosX += DrawCharFromArray( Chars[3] , PosX , SCREEN_MAX_Y - 24 , ColorBlack , ColorWhite );
+	PosX += DrawCharFromArray( Chars[5] , PosX , SCREEN_MAX_Y - 24 , ColorBlack , ColorWhite );
+	PosX += DrawCharFromArray( Chars[3] , PosX , SCREEN_MAX_Y - 24 , ColorBlack , ColorWhite );
+	PosX += DrawCharFromArray( Chars[6] , PosX , SCREEN_MAX_Y - 24 , ColorBlack , ColorWhite );
+	PosX += DrawCharFromArray( Chars[7] , PosX , SCREEN_MAX_Y - 24 , ColorBlack , ColorWhite );
+	PosX += DrawCharFromArray( Chars[8] , PosX , SCREEN_MAX_Y - 24 , ColorBlack , ColorWhite );
+	PosX += DrawCharFromArray( Chars[9] , PosX , SCREEN_MAX_Y - 24 , ColorBlack , ColorWhite );
 
 	// Update the display
 	updateDisplay();
@@ -201,7 +204,7 @@ void setup() {
 void loop() {
 
 	// Reset Watchdog
-	Watchdog.Reset();
+	WatchdogReset();
 
 	// Check if there is a client
 	YunClient client = Server.accept();
@@ -210,6 +213,7 @@ void loop() {
 	if( client ) {
 		// Let some time pass to receive all data
 		delay( 50 );
+		// Connection will be closed after the timeout
 		client.setTimeout( 2000 );
 		// Receive the command
 		String command = client.readString();
@@ -218,7 +222,7 @@ void loop() {
 		// Process the command
 		processCommand( command , client );
 		// Reset Watchdog
-		Watchdog.Reset();
+		WatchdogReset();
 	}
 	
 	// Check time between the now() and the last measurement
@@ -247,40 +251,44 @@ void loop() {
 // Update the display
 void updateDisplay( ) {
 
-	int StartPosY = ChartStartY + ChartBarMargin;
-	int InnerBarHeight = ChartBarHeight - ChartBarMargin - ChartBarMargin;
-	int InnerBarWidth = ChartBarWidth - ChartBarMargin - ChartBarMargin;
+	int StartPosY = ChartBarMargin + 1;
+	int StartPosX = ChartBarMargin + 1;
 
-	float CO2Percentage = (float)CurrentCO2Concentration / MaximumTotalCO2Cocentration;
-	int CO2BarHeight = InnerBarHeight * CO2Percentage;
+	int InnerBarHeight = ChartBarHeight - 2;
+	int InnerBarWidth = ChartBarWidth - 2;
+
+	int CO2BarHeight = InnerBarHeight * ( CurrentCO2Concentration / MaximumTotalCO2Cocentration );
 	int CO2Offset = InnerBarHeight - CO2BarHeight;
 
-	int StartPosX = 20 + ChartBarMargin;
-	Display.fillRectangle( StartPosX , StartPosY , InnerBarWidth , CO2Offset , FillColorWhite );
+	FillRectangle( StartPosX , StartPosY , InnerBarWidth , CO2Offset , ColorWhite );
 	if( CurrentCO2Concentration > TresholdCO2Concentration ) {
 		int Difference = InnerBarHeight - CO2Offset - MaximumCO2BarHeight;
-		Display.fillRectangle( StartPosX , StartPosY + CO2Offset , InnerBarWidth , Difference , FillColorRed );
-		Display.fillRectangle( StartPosX , StartPosY + CO2Offset + Difference , InnerBarWidth , MaximumCO2BarHeight , FillColorDarkGreen );
+		FillRectangle( StartPosX , StartPosY + CO2Offset , InnerBarWidth , Difference , ColorRed );
+		FillRectangle( StartPosX , StartPosY + CO2Offset + Difference , InnerBarWidth , MaximumCO2BarHeight , ColorGreen );
 	} else {
-		Display.fillRectangle( StartPosX , StartPosY + CO2Offset , InnerBarWidth , CO2BarHeight , FillColorDarkGreen );
+		FillRectangle( StartPosX , StartPosY + CO2Offset , InnerBarWidth , CO2BarHeight , ColorGreen );
 	}
 
-	//String CO2Value = "" + CurrentCO2Concentration;
-	//Display.drawStringCenter8px( CO2Value , 20 , 110 , 250 , FontColorBlack , FillColorDarkGreen );
-	
-	float LoudnessPercentage = (float)CurrentLoudness / MaximumTotalLoudness;
-	int LoudnessBarHeight = InnerBarHeight * LoudnessPercentage;
+	String CO2Value = "";
+	CO2Value += CurrentCO2Concentration;
+	DrawStringMessageCenter( CO2Value , StartPosX , StartPosX + InnerBarWidth , StartPosY + InnerBarHeight - 24 , ColorBlack , ColorGreen );
+
+	int LoudnessBarHeight = InnerBarHeight * ( CurrentLoudness / MaximumTotalLoudness );
 	int LoudnessOffset = InnerBarHeight - LoudnessBarHeight;
 
-	StartPosX = 130 + ChartBarMargin;
-	Display.fillRectangle( StartPosX , StartPosY , InnerBarWidth , LoudnessOffset , FillColorWhite );
+	StartPosX = ChartBarWidth + (2*ChartBarMargin) + 1;
+	FillRectangle( StartPosX , StartPosY , InnerBarWidth , LoudnessOffset , ColorWhite );
 	if( CurrentLoudness > TresholdLoudness ) {
 		int Difference = InnerBarHeight - LoudnessOffset - MaximumLoudnessBarHeight;
-		Display.fillRectangle( StartPosX , StartPosY + LoudnessOffset , InnerBarWidth , Difference , FillColorRed );
-		Display.fillRectangle( StartPosX , StartPosY + LoudnessOffset + Difference , InnerBarWidth , MaximumLoudnessBarHeight , FillColorDarkGreen );
+		FillRectangle( StartPosX , StartPosY + LoudnessOffset , InnerBarWidth , Difference , ColorRed );
+		FillRectangle( StartPosX , StartPosY + LoudnessOffset + Difference , InnerBarWidth , MaximumLoudnessBarHeight , ColorGreen );
 	} else {
-		Display.fillRectangle( StartPosX , StartPosY + LoudnessOffset , InnerBarWidth , LoudnessBarHeight , FillColorDarkGreen );
+		FillRectangle( StartPosX , StartPosY + LoudnessOffset , InnerBarWidth , LoudnessBarHeight , ColorGreen );
 	}
+
+	String LoudnessValue = "";
+	LoudnessValue += CurrentLoudness;
+	DrawStringMessageCenter( LoudnessValue , StartPosX , StartPosX + InnerBarWidth , StartPosY + InnerBarHeight - 24 , ColorBlack , ColorGreen );
 }
 
 // Processing the received command
@@ -376,12 +384,12 @@ void processSetTresholdCommand( bool CO2 , bool Loudness , String value , YunCli
 	if( CO2 == true ) {
 	 	TresholdCO2Concentration = value.toInt();
 	 	MaximumCO2BarHeight = ((float)TresholdCO2Concentration/MaximumTotalCO2Cocentration) * ChartBarHeight;
-	 	EEPROMWriteInt( CO2Cell , TresholdCO2Concentration );
+	 	EepromWriteInt( CO2Cell , TresholdCO2Concentration );
 	}
 	if( Loudness == true ) {
 		TresholdLoudness = value.toInt();
 		MaximumLoudnessBarHeight = ((float)TresholdLoudness/MaximumTotalLoudness) * ChartBarHeight;
-		EEPROMWriteInt( LoudnessCell , TresholdLoudness );
+		EepromWriteInt( LoudnessCell , TresholdLoudness );
 	}
 	processGetTresholdCommand( CO2 , Loudness , client );
 }
@@ -399,7 +407,7 @@ void processInfoCommand( YunClient client ){
 
 
 void drawProgressBar( unsigned char percentage ) {
-	Display.fillRectangle( 50 , 170 , int( float(percentage) * 1.4 ) , 10 , FillColorBlue );
+	FillRectangle( 50 , 170 , int( float(percentage) * 1.4 ) , 10 , ColorBlue );
 }
 
 // Get the current temperature
@@ -423,7 +431,6 @@ int getLoudness(){
 
 // Get the current CO2 Concentration
 int getCO2Concentration(){
-
 	int RetryCounter = 0;
 	while( CO2Sensor.available() == 0 ) {
 		CO2Sensor.write( CO2SensorRead , 7 );
@@ -456,8 +463,8 @@ int getCO2Concentration(){
 	}
 }
 
-void EEPROMWriteInt( int address , int value ) {
-	int currentValue = EEPROMReadInt( value );
+void EepromWriteInt( int address , int value ) {
+	int currentValue = EepromReadInt( value );
 	if( value != currentValue ) {
 		byte lowByte = ((value >> 0) & 0xFF);
 		byte highByte = ((value >> 8) & 0xFF);
@@ -466,8 +473,342 @@ void EEPROMWriteInt( int address , int value ) {
 	}
 }
 
-unsigned int EEPROMReadInt( int address ) {
+unsigned int EepromReadInt( int address ) {
 	byte lowByte = eeprom_read_byte((unsigned char *) address);
 	byte highByte = eeprom_read_byte((unsigned char *) address);
 	return ((lowByte << 0) & 0xFF) + ((highByte << 8) & 0xFF00);
+}
+
+void WatchdogEnable() {
+	wdt_enable( 9 );
+}
+
+void WatchdogDisable( ) {
+	wdt_reset();
+	wdt_disable( );
+}
+
+void WatchdogReset( ) {
+	wdt_reset( );
+}
+
+void SendCommand( uchar Command ){
+	DATA_COMMAND_LOW;
+	SLAVE_SELECT_LOW;
+	SPI.transfer( Command );
+	SLAVE_SELECT_HIGH;
+}
+
+void SendData( uchar Data ){
+	DATA_COMMAND_HIGH;
+	SLAVE_SELECT_LOW;
+	SPI.transfer( Data );
+	SLAVE_SELECT_HIGH;
+}
+
+void SendDataInt( uint Data ){
+	uchar DataHigh = Data >> 8;
+	uchar DataLow = Data & 0xFF;
+	DATA_COMMAND_HIGH;
+	SLAVE_SELECT_LOW;
+	SPI.transfer( DataHigh );
+	SPI.transfer( DataLow );
+	SLAVE_SELECT_HIGH;
+}
+
+void SetColumn( uint StartColumn , uint EndColumn ){
+	SendCommand( 0x2A );
+	SendDataInt( StartColumn );
+	SendDataInt( EndColumn );
+}
+
+void SetPage( uint StartPage , uint EndPage ){
+	SendCommand( 0x2B );
+	SendDataInt( StartPage );
+	SendDataInt( EndPage );
+}
+
+void Init( ){
+    SPI.begin();
+    
+    SLAVE_SELECT_HIGH
+    DATA_COMMAND_HIGH;
+
+    delay(500);
+    SendCommand(0x01);
+    delay(200);
+
+    SendCommand(0xCF);
+    SendData(0x00);
+    SendData(0x8B);
+    SendData(0X30);
+
+    SendCommand(0xED);
+    SendData(0x67);
+    SendData(0x03);
+    SendData(0X12);
+    SendData(0X81);
+
+    SendCommand(0xE8);
+    SendData(0x85);
+    SendData(0x10);
+    SendData(0x7A);
+
+    SendCommand(0xCB);
+    SendData(0x39);
+    SendData(0x2C);
+    SendData(0x00);
+    SendData(0x34);
+    SendData(0x02);
+
+    SendCommand(0xF7);
+    SendData(0x20);
+
+    SendCommand(0xEA);
+    SendData(0x00);
+    SendData(0x00);
+
+    // Power Control
+    SendCommand(0xC0);
+    SendData(0x1B);   
+
+    // Power Control
+    SendCommand(0xC1);
+    SendData(0x10);   
+
+    // VCM Control
+    SendCommand(0xC5);
+    SendData(0x3F);
+    SendData(0x3C);
+
+    // VCM Control 2
+    SendCommand(0xC7);
+    SendData(0XB7);
+
+    // Memory Access Control
+    SendCommand(0x36);
+    SendData(0x08);
+
+    SendCommand(0x3A);
+    SendData(0x55);
+
+    SendCommand(0xB1);
+    SendData(0x00);
+    SendData(0x1B);
+
+    // Display Function Control
+    SendCommand(0xB6);
+    SendData(0x0A);
+    SendData(0xA2);
+
+    // 3Gamma Function Disable
+    SendCommand(0xF2);
+    SendData(0x00);
+
+    // Gamma Curve Selected
+    SendCommand(0x26);
+    SendData(0x01);
+
+    // Set Gamma
+    SendCommand(0xE0);
+    SendData(0x0F);
+    SendData(0x2A);
+    SendData(0x28);
+    SendData(0x08);
+    SendData(0x0E);
+    SendData(0x08);
+    SendData(0x54);
+    SendData(0XA9);
+    SendData(0x43);
+    SendData(0x0A);
+    SendData(0x0F);
+    SendData(0x00);
+    SendData(0x00);
+    SendData(0x00);
+    SendData(0x00);
+
+    // Set Gamma
+    SendCommand(0XE1);
+    SendData(0x00);
+    SendData(0x15);
+    SendData(0x17);
+    SendData(0x07);
+    SendData(0x11);
+    SendData(0x06);
+    SendData(0x2B);
+    SendData(0x56);
+    SendData(0x3C);
+    SendData(0x05);
+    SendData(0x10);
+    SendData(0x0F);
+    SendData(0x3F);
+    SendData(0x3F);
+    SendData(0x0F);
+
+    // Exit Sleep
+    SendCommand(0x11);
+    delay(120);
+    // Display On
+    SendCommand(0x29);
+}
+
+void Clear(){
+	SetColumn( SCREEN_MIN_X , SCREEN_MAX_X );
+	SetPage( SCREEN_MIN_Y , SCREEN_MAX_Y );
+	SendCommand( 0x2C );
+
+	DATA_COMMAND_HIGH;
+	SLAVE_SELECT_LOW;
+	for( uint i = 0 ; i < 38400 ; i++ ) {
+		SPI.transfer( 255 );
+		SPI.transfer( 255 );
+		SPI.transfer( 255 );
+		SPI.transfer( 255 );
+	}
+	SLAVE_SELECT_HIGH;
+}
+
+void DrawHorizontalLine( uint poX , uint poY , uint length , uint color ) {
+	SetColumn( poX , poX + length );
+	SetPage( poY , poY );
+	SendCommand( 0x2c );
+	DATA_COMMAND_HIGH;
+	SLAVE_SELECT_LOW;
+	for( int i = 0 ; i < length ; i++ ) {
+		uchar DataHigh = color >> 8;
+		uchar DataLow = color & 0xFF;
+		SPI.transfer( DataHigh );
+		SPI.transfer( DataLow );
+	}
+	SLAVE_SELECT_HIGH;
+}
+
+void DrawVerticalLine( uint poX , uint poY , uint length , uint color ) {
+	SetColumn( poX , poX );
+	SetPage( poY , poY + length );
+	SendCommand( 0x2c );
+	DATA_COMMAND_HIGH;
+	SLAVE_SELECT_LOW;
+	for( int i = 0 ; i < length ; i++ ) {
+		uchar DataHigh = color >> 8;
+		uchar DataLow = color & 0xFF;
+		SPI.transfer( DataHigh );
+		SPI.transfer( DataLow );
+	}
+	SLAVE_SELECT_HIGH;
+}
+
+void DrawRectangle( uint poX , uint poY , uint length , uint width , uint color ) {
+	DrawHorizontalLine( poX , poY , length , color );
+	DrawHorizontalLine( poX , poY + width , length + 1, color );
+	DrawVerticalLine( poX , poY , width , color );
+	DrawVerticalLine( poX + length , poY , width , color );
+}
+
+void FillRectangle( uint x , uint y , uint width , uint height , uint fillColor ){
+
+	SetColumn( x , x + width );
+	SetPage( y , y + height );
+	SendCommand( 0x2C );
+
+	uchar HighColor = fillColor >> 8;
+	uchar LowColor = fillColor & 0xff;
+	ulong Pixels = ( width + 1 ) * ( height + 1 );
+
+	DATA_COMMAND_HIGH;
+	SLAVE_SELECT_LOW;
+
+	for( ulong i =0 ; i < Pixels ; i++ ) {
+		SPI.transfer( HighColor );
+		SPI.transfer( LowColor );
+		SPI.transfer( HighColor );
+		SPI.transfer( LowColor );
+	}
+
+	SLAVE_SELECT_HIGH;
+}
+
+uchar DrawChar( uchar ASCII , uint x , uint y , uint color , uint background ) {
+
+	ASCII = ASCII - 48;
+
+	uchar CharWidth = numbers[ ASCII ][ 0 ];
+	uchar WidthWithSpacing = numbers[ ASCII ][ 1 ];
+
+	SetColumn( x , x + WidthWithSpacing - 1 );
+	SetPage( y , y + 13 );
+	SendCommand( 0x2C );
+
+	for( byte lines = 0 ; lines < 13 ; lines++ ) {
+		uchar currentByte = numbers[ ASCII ][ 2 + lines ];
+		for( byte width = 0 ; width < CharWidth ; width++ ) {
+			if( bitRead( currentByte , 7 - width ) ) {
+				SendDataInt( color );
+			} else {
+				SendDataInt( background );
+			}
+		}
+		for( byte width = 0 ; width < (WidthWithSpacing - CharWidth) ; width++ ) {
+			SendDataInt( background );
+		}
+	}
+
+	return WidthWithSpacing;
+}
+
+uchar DrawCharFromArray( uchar Char[] , uint x , uint y , uint color , uint background ) {
+
+	uchar CharWidth = Char[ 0 ];
+	uchar WidthWithSpacing = Char[ 1 ];
+
+	SetColumn( x , x + WidthWithSpacing - 1 );
+	SetPage( y , y + 13 );
+	SendCommand( 0x2C );
+
+	for( byte lines = 0 ; lines < 13 ; lines++ ) {
+		uchar currentByte = Char[ 2 + lines ];
+		for( byte width = 0 ; width < CharWidth ; width++ ) {
+			if( bitRead( currentByte , 7 - width ) ) {
+				SendDataInt( color );
+			} else {
+				SendDataInt( background );
+			}
+		}
+		for( byte width = 0 ; width < (WidthWithSpacing - CharWidth) ; width++ ) {
+			SendDataInt( background );
+		}
+	}
+	return WidthWithSpacing;
+}
+
+void DrawString( char *string , uint x , uint y , uint color , uint background ) {
+	while( *string ) {
+		x += DrawChar( *string++ , x , y , color , background );
+	}
+}
+
+void DrawStringMessage( String message , uint x , uint y , uint color , uint background ){
+	message.toCharArray( DisplayBuffer , message.length() + 1 );
+	DrawString( DisplayBuffer , x , y , color , background );
+}
+
+uchar DrawStringMessageCenter( String message , uint xStart , uint xEnd , uint y , uint color , uint background ){
+	message.toCharArray( DisplayBuffer , message.length() + 1 );
+	uchar width = GetWidth( DisplayBuffer );
+	DrawString( DisplayBuffer , xStart + 1 + ( (xEnd - xStart) - width ) / 2 , y , color , background );
+	return ( xStart + ( (xEnd - xStart) - width ) / 2 ) + width;
+}
+
+uchar GetWidth( char *string ){
+	int totalWidth = 0;
+	uchar width, widthTotal, xoffset;
+	while( *string ) {
+		uchar ASCII = *string++;
+		ASCII = ASCII - 48;
+		width = numbers[ ASCII ][ 0 ];
+		widthTotal = numbers[ ASCII ][ 1 ];
+		totalWidth += widthTotal;
+	}
+	totalWidth -= (widthTotal - width);
+	return totalWidth;
 }
