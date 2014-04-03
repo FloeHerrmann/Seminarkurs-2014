@@ -1,0 +1,145 @@
+<mockup version="1.0" skin="sketch" fontFace="Balsamiq Sans" measuredW="1338" measuredH="540" mockupW="971" mockupH="522">
+  <controls>
+    <control controlID="0" controlTypeID="com.balsamiq.mockups::TitleWindow" x="367" y="18" w="971" h="522" measuredW="450" measuredH="400" zOrder="0" locked="false" isInGroup="-1">
+      <controlProperties>
+        <bottomheight>0</bottomheight>
+        <close>true</close>
+        <dragger>true</dragger>
+        <maximizeRestore>true</maximizeRestore>
+        <minimize>true</minimize>
+        <text>Air%20-%20Loudness%20-%20Monitoring</text>
+        <topheight>27</topheight>
+        <verticalScrollbar>false</verticalScrollbar>
+      </controlProperties>
+    </control>
+    <control controlID="1" controlTypeID="com.balsamiq.mockups::Tree" x="375" y="51" w="224" h="281" measuredW="300" measuredH="246" zOrder="1" locked="false" isInGroup="-1">
+      <controlProperties>
+        <bold>false</bold>
+        <borderStyle>none</borderStyle>
+        <selectedIndex>5</selectedIndex>
+        <state>up</state>
+        <text>F%20GSMGH%0A%20f%20Erdgeschoss%0A%20F%201.%20Stock%0A%20%20%3E%20Raum%20140%0A%20%20v%20Raum%20141%0A%20%20%20-%20CO2%20Konzentration%0A%20%20%20-%20Lautst%E4rke%0A%20%20%20-%20Temperatur%0A%20%20%3E%20Raum%20142%0A%20f%202.%20Stock</text>
+      </controlProperties>
+    </control>
+    <control controlID="3" controlTypeID="com.balsamiq.mockups::VRule" x="599" y="41" w="-1" h="499" measuredW="10" measuredH="100" zOrder="2" locked="false" isInGroup="-1"/>
+    <control controlID="6" controlTypeID="com.balsamiq.mockups::HRule" x="603" y="68" w="735" h="-1" measuredW="100" measuredH="10" zOrder="3" locked="false" isInGroup="-1"/>
+    <control controlID="8" controlTypeID="com.balsamiq.mockups::Label" x="619" y="47" w="-1" h="-1" measuredW="61" measuredH="21" zOrder="4" locked="false" isInGroup="-1">
+      <controlProperties>
+        <bold>true</bold>
+        <color>0</color>
+        <text>Allgemein</text>
+      </controlProperties>
+    </control>
+    <control controlID="10" controlTypeID="com.balsamiq.mockups::VRule" x="692" y="41" w="-1" h="31" measuredW="10" measuredH="100" zOrder="5" locked="false" isInGroup="-1"/>
+    <control controlID="11" controlTypeID="com.balsamiq.mockups::Label" x="713" y="47" w="-1" h="-1" measuredW="48" measuredH="21" zOrder="6" locked="false" isInGroup="-1">
+      <controlProperties>
+        <bold>false</bold>
+        <color>0</color>
+        <text>Historie</text>
+      </controlProperties>
+    </control>
+    <control controlID="12" controlTypeID="com.balsamiq.mockups::VRule" x="777" y="42" w="-1" h="31" measuredW="10" measuredH="100" zOrder="7" locked="false" isInGroup="-1"/>
+    <control controlID="13" controlTypeID="com.balsamiq.mockups::Label" x="796" y="47" w="-1" h="-1" measuredW="78" measuredH="21" zOrder="8" locked="false" isInGroup="-1">
+      <controlProperties>
+        <bold>false</bold>
+        <color>0</color>
+        <text>Einstellungen</text>
+      </controlProperties>
+    </control>
+    <control controlID="15" controlTypeID="com.balsamiq.mockups::VRule" x="881" y="42" w="-1" h="31" measuredW="10" measuredH="100" zOrder="9" locked="false" isInGroup="-1"/>
+    <control controlID="16" controlTypeID="__group__" x="624" y="262" w="693" h="253" measuredW="693" measuredH="253" zOrder="10" locked="false" isInGroup="-1">
+      <controlProperties>
+        <controlName>sdf</controlName>
+      </controlProperties>
+      <groupChildrenDescriptors>
+        <control controlID="1" controlTypeID="com.balsamiq.mockups::Canvas" x="0" y="0" w="693" h="253" measuredW="100" measuredH="70" zOrder="0" locked="false" isInGroup="16">
+          <controlProperties/>
+        </control>
+        <control controlID="19" controlTypeID="__group__" x="0" y="68" w="656" h="90" measuredW="656" measuredH="90" zOrder="1" locked="false" isInGroup="16">
+          <controlProperties/>
+          <groupChildrenDescriptors>
+            <control controlID="0" controlTypeID="com.balsamiq.mockups::Arrow" x="0" y="35" w="178" h="55" measuredW="150" measuredH="100" zOrder="0" locked="false" isInGroup="19">
+              <controlProperties>
+                <color>2848996</color>
+                <curvature>0</curvature>
+                <direction>bottom</direction>
+                <leftArrow>false</leftArrow>
+                <markup>false</markup>
+                <rightArrow>false</rightArrow>
+              </controlProperties>
+            </control>
+            <control controlID="1" controlTypeID="com.balsamiq.mockups::Arrow" x="253" y="24" w="86" h="41" measuredW="150" measuredH="100" zOrder="1" locked="false" isInGroup="19">
+              <controlProperties>
+                <color>2848996</color>
+                <curvature>0</curvature>
+                <direction>bottom</direction>
+                <leftArrow>false</leftArrow>
+                <markup>false</markup>
+                <rightArrow>false</rightArrow>
+              </controlProperties>
+            </control>
+            <control controlID="2" controlTypeID="com.balsamiq.mockups::Arrow" x="175" y="35" w="79" h="29" measuredW="150" measuredH="100" zOrder="2" locked="false" isInGroup="19">
+              <controlProperties>
+                <color>2848996</color>
+                <curvature>0</curvature>
+                <direction>top</direction>
+                <leftArrow>false</leftArrow>
+                <markup>false</markup>
+                <rightArrow>false</rightArrow>
+              </controlProperties>
+            </control>
+            <control controlID="3" controlTypeID="com.balsamiq.mockups::Arrow" x="336" y="24" w="79" h="29" measuredW="150" measuredH="100" zOrder="3" locked="false" isInGroup="19">
+              <controlProperties>
+                <color>2848996</color>
+                <curvature>0</curvature>
+                <direction>top</direction>
+                <leftArrow>false</leftArrow>
+                <markup>false</markup>
+                <rightArrow>false</rightArrow>
+              </controlProperties>
+            </control>
+            <control controlID="4" controlTypeID="com.balsamiq.mockups::Arrow" x="412" y="12" w="86" h="41" measuredW="150" measuredH="100" zOrder="4" locked="false" isInGroup="19">
+              <controlProperties>
+                <color>2848996</color>
+                <curvature>0</curvature>
+                <direction>bottom</direction>
+                <leftArrow>false</leftArrow>
+                <markup>false</markup>
+                <rightArrow>false</rightArrow>
+              </controlProperties>
+            </control>
+            <control controlID="5" controlTypeID="com.balsamiq.mockups::Arrow" x="494" y="12" w="79" h="29" measuredW="150" measuredH="100" zOrder="5" locked="false" isInGroup="19">
+              <controlProperties>
+                <color>2848996</color>
+                <curvature>0</curvature>
+                <direction>top</direction>
+                <leftArrow>false</leftArrow>
+                <markup>false</markup>
+                <rightArrow>false</rightArrow>
+              </controlProperties>
+            </control>
+            <control controlID="6" controlTypeID="com.balsamiq.mockups::Arrow" x="570" y="0" w="86" h="41" measuredW="150" measuredH="100" zOrder="6" locked="false" isInGroup="19">
+              <controlProperties>
+                <color>2848996</color>
+                <curvature>0</curvature>
+                <direction>bottom</direction>
+                <leftArrow>false</leftArrow>
+                <markup>false</markup>
+                <rightArrow>false</rightArrow>
+              </controlProperties>
+            </control>
+          </groupChildrenDescriptors>
+        </control>
+      </groupChildrenDescriptors>
+    </control>
+    <control controlID="17" controlTypeID="com.balsamiq.mockups::DataGrid" x="624" y="87" w="693" h="163" measuredW="345" measuredH="155" zOrder="11" locked="false" isInGroup="-1">
+      <controlProperties>
+        <borderStyle>none</borderStyle>
+        <hasHeader>false</hasHeader>
+        <selectedIndex>-1</selectedIndex>
+        <text>Name%2C%20Temperatur%0A%DCbergeordnetes%20Objekt%2C%20Raum%20141%0AEinheit%2C%20ppm%20%28Parts%20Per%20Million%29%0ALetzter%20Wert%2C%201345%B0C%20%2801.01.1970%2003%3A03%3A03%29%0AZuletzt%20Aktualisiert%2C%20%2801.01.1970%2003%3A03%3A03%29%0A%7B30L%2C%2070L%7D</text>
+        <vLines>false</vLines>
+      </controlProperties>
+    </control>
+  </controls>
+</mockup>
