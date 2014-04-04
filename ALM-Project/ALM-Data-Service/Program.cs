@@ -61,11 +61,7 @@ namespace ALM_Data_Service {
 								streamWriter.Write( "C:Data:Get;" );
 
 								// Read answer from the device
-								Int32 receivedChars = streamReader.Read( readBuffer , 0 , readBuffer.Length );
-								if( receivedChars != 0 ) {
-									deviceResponse = new String( readBuffer );
-									deviceResponse = deviceResponse.Substring( 0 , receivedChars );
-								}
+								deviceResponse = streamReader.ReadLine();
 
 								streamWriter.Close();
 								tcpClient.Close();

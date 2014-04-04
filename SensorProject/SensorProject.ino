@@ -33,19 +33,6 @@ uchar numbers[10][16] = {
 	{8,10, 60,126,199,195,195,195,127,59,3,3,198,254,124},
 };
 
-uchar Chars[10][16] = {
-	{8,10, 192,192,192,192,192,192,192,192,192,192,192,255,255}, // L
-	{8,10, 0,0,0,195,195,195,195,195,195,195,199,255,123}, // u
-	{6,8, 28,60,48,48,252,252,48,48,48,48,48,48,48}, // f
-	{6,8, 48,48,48,252,252,48,48,48,48,48,48,60,28}, // t
-	{8,10,  0,0,0,123,255,199,195,195,195,195,199,255,123}, //a
-	{7,9, 0,0,0,60,126,198,192,252,62,6,198,252,120}, // s
-	{8,10,  195,195,0,123,255,199,195,195,195,195,199,255,123}, //ä
-	{5,7, 0,0,0,216,216,224,192,192,192,192,192,192,192}, // r
-	{8,10, 192,192,192,198,204,216,240,248,216,204,206,198,199}, // k
-	{8,8, 0,0,0,60,126,195,195,255,192,192,227,127,60}, // e
-};
-
 // Define Colors
 #define ColorBlack 0x0000
 #define ColorWhite 0xFFFF
@@ -60,13 +47,15 @@ uchar Chars[10][16] = {
 #define ColorCyan 0x6679
 #define ColorPurple 0x826F
 
-#define MaximumTotalLoudness 1023.0
-#define MaximumTotalCO2Cocentration 3000.0
+#define MaximumTotalLoudness 1023
+#define MaximumTotalCO2Cocentration 3000
 
 // Data for display
-#define ChartBarMargin 10
-#define ChartBarWidth (240 - 3*ChartBarMargin)/2
-#define ChartBarHeight (320 - ChartBarMargin - 40)
+
+#define BarMarginX 10
+#define BarMarginY 40
+#define BarHeight 240
+#define BarWidth 105
 
 // Time between two measurements/samples
 #define SampleTime 5000
@@ -114,9 +103,6 @@ const byte CO2SensorRead[] = { 0xFE , 0X44 , 0X00 , 0X08 , 0X02 , 0X9F , 0X25 };
 
 char DisplayBuffer[12];
 
-const char FirmwareVersion[] = "1.2";
-const char FirmwareDate[] = "31.03.2014 10:01";
-
 void setup() {
 
 	// Open the serial connection to the CO2 sensor
@@ -133,14 +119,14 @@ void setup() {
 	TresholdCO2Concentration = EepromReadInt( CO2Cell );
 	// When no threshold is defined, set default
 	if( TresholdCO2Concentration == -1 ) TresholdCO2Concentration = 1500;
-	MaximumCO2BarHeight = (TresholdCO2Concentration/MaximumTotalCO2Cocentration) * ChartBarHeight;
+	MaximumCO2BarHeight = ((float)TresholdCO2Concentration/(float)MaximumTotalCO2Cocentration) * BarHeight;
 	drawProgressBar( 20 );
 
 	// Load maximum loudness treshold from EEPROm
 	TresholdLoudness = EepromReadInt( LoudnessCell );
 	// When no threshold is defined, set default
-	if( TresholdLoudness == -1 ) TresholdLoudness = 800;
-	MaximumLoudnessBarHeight = (TresholdLoudness/MaximumTotalLoudness) * ChartBarHeight;
+	if( TresholdLoudness == -1 ) TresholdLoudness = 200;
+	MaximumLoudnessBarHeight = ((float)TresholdLoudness/(float)MaximumTotalLoudness) * BarHeight;
 	drawProgressBar( 34 );
 
 	// Starting the Bridge
@@ -167,32 +153,45 @@ void setup() {
 
 	delay( 1000 );
 	Clear();
-	
+
+	uchar Chars[10][16] = {
+		{8,10, 192,192,192,192,192,192,192,192,192,192,192,255,255}, // L
+		{8,10, 0,0,0,195,195,195,195,195,195,195,199,255,123}, // u
+		{6,8, 28,60,48,48,252,252,48,48,48,48,48,48,48}, // f
+		{6,8, 48,48,48,252,252,48,48,48,48,48,48,60,28}, // t
+		{8,10,  0,0,0,123,255,199,195,195,195,195,199,255,123}, //a
+		{7,9, 0,0,0,60,126,198,192,252,62,6,198,252,120}, // s
+		{8,10,  195,195,0,123,255,199,195,195,195,195,199,255,123}, //ä
+		{5,7, 0,0,0,216,216,224,192,192,192,192,192,192,192}, // r
+		{8,10, 192,192,192,198,204,216,240,248,216,204,206,198,199}, // k
+		{8,8, 0,0,0,60,126,195,195,255,192,192,227,127,60}, // e
+	};
+
+	// "Luft" Heading
+	int PosX = BarMarginX + (( BarWidth - 35 )/2);
+	PosX += DrawCharFromArray( Chars[0] , PosX , 16 , ColorBlack , ColorWhite );
+	PosX += DrawCharFromArray( Chars[1] , PosX , 16 , ColorBlack , ColorWhite );
+	PosX += DrawCharFromArray( Chars[2] , PosX , 16 , ColorBlack , ColorWhite );
+	PosX += DrawCharFromArray( Chars[3] , PosX , 16 , ColorBlack , ColorWhite );
+
+	// "Lautstärke" Heading
+	PosX = ( 2 * BarMarginX + BarWidth ) + (( BarWidth - 90 )/2);
+	PosX += DrawCharFromArray( Chars[0] , PosX , 16 , ColorBlack , ColorWhite );
+	PosX += DrawCharFromArray( Chars[4] , PosX , 16 , ColorBlack , ColorWhite );
+	PosX += DrawCharFromArray( Chars[1] , PosX , 16 , ColorBlack , ColorWhite );
+	PosX += DrawCharFromArray( Chars[3] , PosX , 16 , ColorBlack , ColorWhite );
+	PosX += DrawCharFromArray( Chars[5] , PosX , 16 , ColorBlack , ColorWhite );
+	PosX += DrawCharFromArray( Chars[3] , PosX , 16 , ColorBlack , ColorWhite );
+	PosX += DrawCharFromArray( Chars[6] , PosX , 16 , ColorBlack , ColorWhite );
+	PosX += DrawCharFromArray( Chars[7] , PosX , 16 , ColorBlack , ColorWhite );
+	PosX += DrawCharFromArray( Chars[8] , PosX , 16 , ColorBlack , ColorWhite );
+	PosX += DrawCharFromArray( Chars[9] , PosX , 16 , ColorBlack , ColorWhite );
+
 	// Frame for the CO2 Concentration bar
-	DrawRectangle( ChartBarMargin , ChartBarMargin , ChartBarWidth , ChartBarHeight , ColorBlack );
-	// Display.drawStringCenter8px( "Air" , 20 , 110 , 280 , ColorBlack , ColorWhite );
+	DrawRectangle( BarMarginX , BarMarginY , BarWidth , BarHeight , ColorBlack );
 
 	// Frame for the loudness bar
-	DrawRectangle( ChartBarWidth + (2*ChartBarMargin) , ChartBarMargin , ChartBarWidth , ChartBarHeight , ColorBlack );
-	// Display.drawStringCenter8px( "Loudness" , 130 , 220 , 280 , ColorBlack , ColorWhite );
-
-	int PosX = ChartBarMargin + (( ChartBarWidth - 35 )/2);
-	PosX += DrawCharFromArray( Chars[0] , PosX , SCREEN_MAX_Y - 24 , ColorBlack , ColorWhite );
-	PosX += DrawCharFromArray( Chars[1] , PosX , SCREEN_MAX_Y - 24 , ColorBlack , ColorWhite );
-	PosX += DrawCharFromArray( Chars[2] , PosX , SCREEN_MAX_Y - 24 , ColorBlack , ColorWhite );
-	PosX += DrawCharFromArray( Chars[3] , PosX , SCREEN_MAX_Y - 24 , ColorBlack , ColorWhite );
-	
-	PosX = ( 2 * ChartBarMargin + ChartBarWidth ) + (( ChartBarWidth - 90 )/2);
-	PosX += DrawCharFromArray( Chars[0] , PosX , SCREEN_MAX_Y - 24 , ColorBlack , ColorWhite );
-	PosX += DrawCharFromArray( Chars[4] , PosX , SCREEN_MAX_Y - 24 , ColorBlack , ColorWhite );
-	PosX += DrawCharFromArray( Chars[1] , PosX , SCREEN_MAX_Y - 24 , ColorBlack , ColorWhite );
-	PosX += DrawCharFromArray( Chars[3] , PosX , SCREEN_MAX_Y - 24 , ColorBlack , ColorWhite );
-	PosX += DrawCharFromArray( Chars[5] , PosX , SCREEN_MAX_Y - 24 , ColorBlack , ColorWhite );
-	PosX += DrawCharFromArray( Chars[3] , PosX , SCREEN_MAX_Y - 24 , ColorBlack , ColorWhite );
-	PosX += DrawCharFromArray( Chars[6] , PosX , SCREEN_MAX_Y - 24 , ColorBlack , ColorWhite );
-	PosX += DrawCharFromArray( Chars[7] , PosX , SCREEN_MAX_Y - 24 , ColorBlack , ColorWhite );
-	PosX += DrawCharFromArray( Chars[8] , PosX , SCREEN_MAX_Y - 24 , ColorBlack , ColorWhite );
-	PosX += DrawCharFromArray( Chars[9] , PosX , SCREEN_MAX_Y - 24 , ColorBlack , ColorWhite );
+	DrawRectangle( 2 * BarMarginX + BarWidth , BarMarginY , BarWidth , BarHeight , ColorBlack );
 
 	// Update the display
 	updateDisplay();
@@ -212,9 +211,9 @@ void loop() {
 	// Handle client request
 	if( client ) {
 		// Let some time pass to receive all data
-		delay( 50 );
+		delay( 100 );
 		// Connection will be closed after the timeout
-		client.setTimeout( 2000 );
+		// client.setTimeout( 5000 );
 		// Receive the command
 		String command = client.readString();
 		// Trim the command
@@ -250,163 +249,148 @@ void loop() {
 
 // Update the display
 void updateDisplay( ) {
+	// CO2 Concentration
+	drawBar( BarMarginX + 1 , BarMarginY + 1 , MaximumCO2BarHeight , TresholdCO2Concentration , CurrentCO2Concentration , MaximumTotalCO2Cocentration );
 
-	int StartPosY = ChartBarMargin + 1;
-	int StartPosX = ChartBarMargin + 1;
+	// Loudness
+	drawBar( 2 * BarMarginX + BarWidth + 1 , BarMarginY + 1 , MaximumLoudnessBarHeight , TresholdLoudness , CurrentLoudness , MaximumTotalLoudness );
+}
 
-	int InnerBarHeight = ChartBarHeight - 2;
-	int InnerBarWidth = ChartBarWidth - 2;
-
-	int CO2BarHeight = InnerBarHeight * ( CurrentCO2Concentration / MaximumTotalCO2Cocentration );
-	int CO2Offset = InnerBarHeight - CO2BarHeight;
-
-	FillRectangle( StartPosX , StartPosY , InnerBarWidth , CO2Offset , ColorWhite );
-	if( CurrentCO2Concentration > TresholdCO2Concentration ) {
-		int Difference = InnerBarHeight - CO2Offset - MaximumCO2BarHeight;
-		FillRectangle( StartPosX , StartPosY + CO2Offset , InnerBarWidth , Difference , ColorRed );
-		FillRectangle( StartPosX , StartPosY + CO2Offset + Difference , InnerBarWidth , MaximumCO2BarHeight , ColorGreen );
+void drawBar( uint x , uint y , uint MaxBarHeight , uint Threshold , uint Value , uint MaxValue ) {
+	WatchdogReset();
+	// Loudness
+	uint CurrentValue = Value;
+	// If current loudness is negativ, set to 0
+	if( CurrentValue < 0 ) CurrentValue = 0;
+	// Calculate the height of the Bar that matches the current loudness
+	uint CurrentBarHeight = (BarHeight - 2) * ( (float)CurrentValue/(float)MaxValue );
+	// Check if current loudness is higher than the defined treshold
+	if( CurrentValue > Threshold ) {
+		FillRectangle( x , y , (BarWidth - 2) , (BarHeight - 2) - CurrentBarHeight , ColorWhite );
+		FillRectangle( x , y + ((BarHeight - 2) - CurrentBarHeight) , (BarWidth - 2) , CurrentBarHeight - MaxBarHeight , ColorRed );
+		FillRectangle( x , y + ((BarHeight - 2) - MaxBarHeight) + 1 , (BarWidth - 2) , MaxBarHeight - 1, ColorGreen );
 	} else {
-		FillRectangle( StartPosX , StartPosY + CO2Offset , InnerBarWidth , CO2BarHeight , ColorGreen );
+		FillRectangle( x , y , (BarWidth - 2) , (BarHeight - 2) - MaxBarHeight - 1 , ColorWhite );
+		FillRectangle( x , y + ((BarHeight - 2) - MaxBarHeight) + 1 , (BarWidth - 2) , MaxBarHeight - CurrentBarHeight , ColorWhite );
+		FillRectangle( x , y + ((BarHeight - 2) - CurrentBarHeight) , (BarWidth - 2) , CurrentBarHeight , ColorGreen );
 	}
-
-	String CO2Value = "";
-	CO2Value += CurrentCO2Concentration;
-	DrawStringMessageCenter( CO2Value , StartPosX , StartPosX + InnerBarWidth , StartPosY + InnerBarHeight - 24 , ColorBlack , ColorGreen );
-
-	int LoudnessBarHeight = InnerBarHeight * ( CurrentLoudness / MaximumTotalLoudness );
-	int LoudnessOffset = InnerBarHeight - LoudnessBarHeight;
-
-	StartPosX = ChartBarWidth + (2*ChartBarMargin) + 1;
-	FillRectangle( StartPosX , StartPosY , InnerBarWidth , LoudnessOffset , ColorWhite );
-	if( CurrentLoudness > TresholdLoudness ) {
-		int Difference = InnerBarHeight - LoudnessOffset - MaximumLoudnessBarHeight;
-		FillRectangle( StartPosX , StartPosY + LoudnessOffset , InnerBarWidth , Difference , ColorRed );
-		FillRectangle( StartPosX , StartPosY + LoudnessOffset + Difference , InnerBarWidth , MaximumLoudnessBarHeight , ColorGreen );
-	} else {
-		FillRectangle( StartPosX , StartPosY + LoudnessOffset , InnerBarWidth , LoudnessBarHeight , ColorGreen );
-	}
-
-	String LoudnessValue = "";
-	LoudnessValue += CurrentLoudness;
-	DrawStringMessageCenter( LoudnessValue , StartPosX , StartPosX + InnerBarWidth , StartPosY + InnerBarHeight - 24 , ColorBlack , ColorGreen );
+	// Show the current treshold as a horizontal line
+	DrawHorizontalLine( x , y + ((BarHeight - 2) - MaxBarHeight) , BarWidth - 1 , ColorRed );
+	// Show current loudness
+	String StringValue = "";
+	StringValue += Value;
+	FillRectangle( x , SCREEN_MAX_Y - 24 , x + BarWidth - 1 , 20 , ColorWhite );
+	DrawStringMessageCenter( StringValue , x , x + (BarWidth - 2) , SCREEN_MAX_Y - 24 , ColorBlack , ColorWhite );
 }
 
 // Processing the received command
 void processCommand( String command , YunClient client ) {
+	WatchdogReset();
 	if( command == "C:Data:Get;" ) {
 		processDataCommand( true , true , true , client );
-	} else if( command == "C:Data:Get:CO2Concentration;" ) {
+	} else if( command.equals( "C:Data:Get:CO2Concentration;" ) ) {
 		processDataCommand( true , false , false , client );
-	} else if( command == "C:Data:Get:Loudness;" ) {
+	} else if( command.equals( "C:Data:Get:Loudness;" ) ) {
 		processDataCommand( false , true , false , client );
-	} else if( command == "C:Data:Get:Temperature;" ) {
+	} else if( command.equals( "C:Data:Get:Temperature;" ) ) {
 		processDataCommand( false , false , true , client );
-	} else if( command == "C:Threshold:Get;" ) {
-		processGetTresholdCommand( true , true , client );
-	} else if( command == "C:Threshold:Get:Loudness;" ) {
-		processGetTresholdCommand( false , true , client );
-	} else if( command == "C:Threshold:Get:CO2Concentration;" ) {
-		processGetTresholdCommand( true , false , client );
-	} else if( command.indexOf( "C:Threshold:Set:Loudness:" ) != -1 ) {
-		// Command > C:Treshold:Set:Loudness:80;
-		int StartIndex = command.lastIndexOf( ":" );
-		int EndIndex = command.lastIndexOf( ";" );
-		String value = command.substring( StartIndex + 1 , EndIndex );
-		processSetTresholdCommand( false , true , value , client );
-	} else if( command.indexOf( "C:Threshold:Set:CO2Concentration:" ) != -1 ) {
-		// Command > C:Treshold:Set:CO2Concentration:2000;
-		int StartIndex = command.lastIndexOf( ":" );
-		int EndIndex = command.lastIndexOf( ";" );
-		String value = command.substring( StartIndex + 1 , EndIndex );
-		processSetTresholdCommand( true , false , value , client );
-	} else if( command.indexOf( "C:Device:Reset;") != -1 ) {
+	} else if( command.equals( "C:Device:Reset;" ) ) {
 		client.println( "{\"State\":\"OK\"}" );
 		client.flush();
 		client.stop();
 		delay( 10 * 1000 );
-	} else if( command.indexOf( "C:Device:Info;") != -1 ) {
-		processInfoCommand( client );
-	} else {
-		client.println( "{\"State\":\"Unknown Command\"}" );
+	} else if( command.equals( "C:Device:Info;" ) ) {
+		client.println( "{\"FirmwareVersion\":\"1.3\",\"FirmwareDate\":\"04.04.2014 13:34\"}" );
 		client.flush();
 		client.stop();
+	} else if( command.equals( "C:Threshold:Get;" ) ) {
+		processGetTresholdCommand( true , true , client );
+	} else if( command.equals( "C:Threshold:Get:Loudness;" ) ) {
+		processGetTresholdCommand( false , true , client );
+	} else if( command.equals( "C:Threshold:Get:CO2Concentration;" ) ) {
+		processGetTresholdCommand( true , false , client );
+	} else if( command.indexOf( "C:Threshold:Set:Loudness:" ) != -1 ) {
+		client.println( "Set Threshold" );
+		processSetTresholdCommand( false , true , command.substring( command.lastIndexOf( ":" ) + 1 , command.lastIndexOf( ";" ) ) , client );
+		client.flush();
+		client.stop();
+		updateDisplay();
+	} else if( command.indexOf( "C:Threshold:Set:CO2Concentration:" ) != -1 ) {
+		client.println( "Set Threshold" );
+		processSetTresholdCommand( true , false , command.substring( command.lastIndexOf( ":" ) + 1 , command.lastIndexOf( ";" ) ) , client );
+		client.flush();
+		client.stop();
+		updateDisplay();
+	} else {
+		client.println( "{\"State\":\"Unknown Command\"}" );
 	}
 }
 
 // Processing the command to get data
 void processDataCommand( bool CO2 , bool Loudness , bool Temperature , YunClient client ) {
-	String dataString = "{";
+	WatchdogReset();
+	client.print( "{" );
 	if ( CO2 == true) {
-		dataString += "\"CO2Concentration\":\"";
-		dataString += CurrentCO2Concentration;
-		dataString += "\"";
-		if( Loudness == true || Temperature == true ) dataString += ",";
+		client.print( "\"CO2Concentration\":\"" );
+		client.print( CurrentCO2Concentration );
+		client.print( "\"" );
+		if( Loudness == true || Temperature == true ) client.print( "," );
 	}
 	if( Loudness == true ) {
-		dataString += "\"Loudness\":\"";
-		dataString += CurrentLoudness;
-		dataString += "\"";
-		if( Temperature == true ) dataString += ",";
+		client.print( "\"Loudness\":\"" );
+		client.print( CurrentLoudness );
+		client.print( "\"" );
+		if( Temperature == true ) client.print( "," );
 	}
 	if( Temperature == true ){
-		dataString += "\"Temperature\":\"";
-		dataString += CurrentTemperature;
-		dataString += "\"";
+		client.print( "\"Temperature\":\"" );
+		client.print( CurrentTemperature );
+		client.print( "\"" );
 	}
-	dataString += "}";
-	client.println( dataString );
+	client.println( "}" );
 	client.flush();
 	client.stop();
 }
 
 // Processing the command to get a treshold
 void processGetTresholdCommand( bool CO2 , bool Loudness , YunClient client ) {
-	String dataString = "{";
+	WatchdogReset();
+	client.print( "{" );
 	if( CO2 == true ) {
-		dataString += "\"CO2Treshold\":\"";
-		dataString += TresholdCO2Concentration;
-		dataString += "\"";
-		if( Loudness == true ) dataString += ",";
+		client.print( "\"CO2Treshold\":\"" );
+		client.print( TresholdCO2Concentration );
+		client.print( "\"" );
+		if( Loudness == true ) client.print( "," );
 	}
 	if( Loudness == true ) {
-		dataString += "\"LoudnessTreshold\":\"";
-		dataString += TresholdLoudness;
-		dataString += "\"";
+		client.print( "\"LoudnessTreshold\":\"" );
+		client.print( TresholdLoudness );
+		client.print( "\"" );
 	}
-	dataString += "}" ;
-	client.println( dataString );
+	client.println( "}" );
 	client.flush();
 	client.stop();
 }
 
 // Processing the command to set a treshold
 void processSetTresholdCommand( bool CO2 , bool Loudness , String value , YunClient client ) {
+	WatchdogReset();
+	int intValue = value.toInt();
 	if( CO2 == true ) {
-	 	TresholdCO2Concentration = value.toInt();
-	 	MaximumCO2BarHeight = ((float)TresholdCO2Concentration/MaximumTotalCO2Cocentration) * ChartBarHeight;
+	 	TresholdCO2Concentration = intValue;
+	 	MaximumCO2BarHeight = ((float)TresholdCO2Concentration/(float)MaximumTotalCO2Cocentration) * BarHeight;
 	 	EepromWriteInt( CO2Cell , TresholdCO2Concentration );
 	}
 	if( Loudness == true ) {
-		TresholdLoudness = value.toInt();
-		MaximumLoudnessBarHeight = ((float)TresholdLoudness/MaximumTotalLoudness) * ChartBarHeight;
+		TresholdLoudness = intValue;
+		MaximumLoudnessBarHeight = ((float)TresholdLoudness/(float)MaximumTotalLoudness) * BarHeight;
 		EepromWriteInt( LoudnessCell , TresholdLoudness );
 	}
 	processGetTresholdCommand( CO2 , Loudness , client );
 }
 
-void processInfoCommand( YunClient client ){
-	String dataString = "{\"FirmwareVersion\":\"";
-	dataString += FirmwareVersion;
-	dataString += "\",\"FirmwareDate\":\"";
-	dataString += FirmwareDate;
-	dataString += "\"}";
-	client.println( dataString );
-	client.flush();
-	client.stop();
-}
-
-
 void drawProgressBar( unsigned char percentage ) {
+	WatchdogReset();
 	FillRectangle( 50 , 170 , int( float(percentage) * 1.4 ) , 10 , ColorBlue );
 }
 
@@ -434,7 +418,7 @@ int getCO2Concentration(){
 	int RetryCounter = 0;
 	while( CO2Sensor.available() == 0 ) {
 		CO2Sensor.write( CO2SensorRead , 7 );
-		if( RetryCounter++ > 20 ) return -800;
+		if( RetryCounter++ > 20 ) return 1200;//return -800;
 		delay( 50 );
 	}
 
@@ -728,34 +712,6 @@ void FillRectangle( uint x , uint y , uint width , uint height , uint fillColor 
 	SLAVE_SELECT_HIGH;
 }
 
-uchar DrawChar( uchar ASCII , uint x , uint y , uint color , uint background ) {
-
-	ASCII = ASCII - 48;
-
-	uchar CharWidth = numbers[ ASCII ][ 0 ];
-	uchar WidthWithSpacing = numbers[ ASCII ][ 1 ];
-
-	SetColumn( x , x + WidthWithSpacing - 1 );
-	SetPage( y , y + 13 );
-	SendCommand( 0x2C );
-
-	for( byte lines = 0 ; lines < 13 ; lines++ ) {
-		uchar currentByte = numbers[ ASCII ][ 2 + lines ];
-		for( byte width = 0 ; width < CharWidth ; width++ ) {
-			if( bitRead( currentByte , 7 - width ) ) {
-				SendDataInt( color );
-			} else {
-				SendDataInt( background );
-			}
-		}
-		for( byte width = 0 ; width < (WidthWithSpacing - CharWidth) ; width++ ) {
-			SendDataInt( background );
-		}
-	}
-
-	return WidthWithSpacing;
-}
-
 uchar DrawCharFromArray( uchar Char[] , uint x , uint y , uint color , uint background ) {
 
 	uchar CharWidth = Char[ 0 ];
@@ -782,33 +738,27 @@ uchar DrawCharFromArray( uchar Char[] , uint x , uint y , uint color , uint back
 }
 
 void DrawString( char *string , uint x , uint y , uint color , uint background ) {
+	uchar ASCII;
 	while( *string ) {
-		x += DrawChar( *string++ , x , y , color , background );
+		ASCII = *string++;
+		ASCII -= 48;
+		x += DrawCharFromArray( numbers[ASCII] , x , y , color , background );
 	}
 }
 
-void DrawStringMessage( String message , uint x , uint y , uint color , uint background ){
-	message.toCharArray( DisplayBuffer , message.length() + 1 );
-	DrawString( DisplayBuffer , x , y , color , background );
-}
-
-uchar DrawStringMessageCenter( String message , uint xStart , uint xEnd , uint y , uint color , uint background ){
+void DrawStringMessageCenter( String message , uint xStart , uint xEnd , uint y , uint color , uint background ){
 	message.toCharArray( DisplayBuffer , message.length() + 1 );
 	uchar width = GetWidth( DisplayBuffer );
 	DrawString( DisplayBuffer , xStart + 1 + ( (xEnd - xStart) - width ) / 2 , y , color , background );
-	return ( xStart + ( (xEnd - xStart) - width ) / 2 ) + width;
 }
 
 uchar GetWidth( char *string ){
-	int totalWidth = 0;
-	uchar width, widthTotal, xoffset;
+	uchar totalWidth = 0;
 	while( *string ) {
 		uchar ASCII = *string++;
 		ASCII = ASCII - 48;
-		width = numbers[ ASCII ][ 0 ];
-		widthTotal = numbers[ ASCII ][ 1 ];
-		totalWidth += widthTotal;
+		totalWidth += numbers[ ASCII ][ 1 ];
 	}
-	totalWidth -= (widthTotal - width);
+	totalWidth -= 2;
 	return totalWidth;
 }
