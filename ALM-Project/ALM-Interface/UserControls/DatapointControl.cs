@@ -34,6 +34,8 @@ namespace ALM_Interface.UserControls {
 
 			this.DatapointID = datapoint.GetID();
 			this.LabelDatapointName.Text = datapoint.GetName();
+			this.AnalyseDatapointName.Text = datapoint.GetName();
+			this.AnalyseDatapointDescription.Text = datapoint.GetDescription();
 			this.LabelDatapointDescription.Text = datapoint.GetDescription();
 			this.LabelDatapointID.Text = datapoint.GetID().ToString();
 			this.LabelDatapointParent.Text = parent.GetName();
@@ -44,18 +46,6 @@ namespace ALM_Interface.UserControls {
 			this.LabelDatapointUnit.Text = datapoint.GetUnit();
 			this.LabelDatapointLastValue.Text = datapoint.GetLastValue() + " (" + datapoint.GetLastValueUpdate() + ")";
 			this.LabelDatapointLastUpdate.Text = datapoint.GetLastUpdated().ToString();
-			DrawDatapointChart();
-		}
-
-		private void DrawDatapointChart () {
-
-			ChartDatapoint.Series.Clear();
-
-			Series datapointSeries = new Series();
-
-			datapointSeries.ChartArea = ChartDatapoint.ChartAreas[ 0 ].Name;
-			datapointSeries.ChartType = SeriesChartType.Line;
-			datapointSeries.XValueType = ChartValueType.DateTime;
 
 			DateTime From = DateTime.Now;
 			TimeSpan FromTime = new TimeSpan(0, 0, 0);
@@ -64,6 +54,18 @@ namespace ALM_Interface.UserControls {
 			DateTime To = DateTime.Now;
 			TimeSpan ToTime = new TimeSpan(23, 59, 59);
 			To = To.Date + ToTime;
+
+			DrawDatapointChart( ChartDatapoint , From , To );
+		}
+
+		private void DrawDatapointChart ( Chart TargetChart , DateTime From , DateTime To ) {
+			TargetChart.Series.Clear();
+
+			Series datapointSeries = new Series();
+
+			datapointSeries.ChartArea = TargetChart.ChartAreas[ 0 ].Name;
+			datapointSeries.ChartType = SeriesChartType.Line;
+			datapointSeries.XValueType = ChartValueType.DateTime;
 
 			this.Database.OpenConnection();
 			List<DatapointValueNode> datapointValues = this.Database.GetDatapointValuesByDatapointID( this.DatapointID , From , To );
@@ -76,13 +78,39 @@ namespace ALM_Interface.UserControls {
 				if( value > maxValue ) maxValue = value;
 			}
 
-			ChartDatapoint.Series.Add( datapointSeries );
-			ChartDatapoint.ChartAreas[ 0 ].RecalculateAxesScale();
+			TargetChart.Series.Add( datapointSeries );
+			TargetChart.ChartAreas[ 0 ].RecalculateAxesScale();
 		}
 
 		private void DatapointTabControlResize ( object sender , EventArgs e ) {
 			//Console.WriteLine( this.Height );
 			//ChartDatapoint.Height = this.Height - 240;
 		}
+
+		private void DatapointTabControlSelectedIndexChanged ( object sender , EventArgs e ) {
+			DateTime From = DateTime.Now;
+			TimeSpan FromTime = new TimeSpan( 0 , 0 , 0 );
+			From = From.Date + FromTime;
+
+			DateTime To = DateTime.Now;
+			TimeSpan ToTime = new TimeSpan( 23 , 59 , 59 );
+			To = To.Date + ToTime;
+			if( DatapointTabControl.SelectedIndex == 0 ) {
+				DrawDatapointChart( ChartDatapoint , From , To );
+			} else if( DatapointTabControl.SelectedIndex == 1 ) {
+				DateTimePickerFrom.Value = From;
+				DateTimePickerTo.Value = To;
+			}
+		}
+
+		private void DateTimePickerFromValueChanged ( object sender , EventArgs e ) {
+			DrawDatapointChart( ChartDatapointAnalyse , DateTimePickerFrom.Value , DateTimePickerTo.Value );
+			Console.WriteLine( DateTimePickerFrom.Value );
+		}
+
+		private void DateTimePickerToValueChanged ( object sender , EventArgs e ) {
+			DrawDatapointChart( ChartDatapointAnalyse , DateTimePickerFrom.Value , DateTimePickerTo.Value );
+		}
+
 	}
 }

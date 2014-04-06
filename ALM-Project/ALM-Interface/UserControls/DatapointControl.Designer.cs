@@ -23,9 +23,12 @@
 		/// Der Inhalt der Methode darf nicht mit dem Code-Editor geändert werden.
 		/// </summary>
 		private void InitializeComponent () {
-			System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-			System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
-			System.Windows.Forms.DataVisualization.Charting.Title title1 = new System.Windows.Forms.DataVisualization.Charting.Title();
+			System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea6 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+			System.Windows.Forms.DataVisualization.Charting.Series series6 = new System.Windows.Forms.DataVisualization.Charting.Series();
+			System.Windows.Forms.DataVisualization.Charting.Title title6 = new System.Windows.Forms.DataVisualization.Charting.Title();
+			System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea5 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+			System.Windows.Forms.DataVisualization.Charting.Series series5 = new System.Windows.Forms.DataVisualization.Charting.Series();
+			System.Windows.Forms.DataVisualization.Charting.Title title5 = new System.Windows.Forms.DataVisualization.Charting.Title();
 			this.DatapointTabControl = new System.Windows.Forms.TabControl();
 			this.DatapointTabControlOverview = new System.Windows.Forms.TabPage();
 			this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
@@ -46,12 +49,27 @@
 			this.LabelDatapointName = new System.Windows.Forms.Label();
 			this.ChartDatapoint = new System.Windows.Forms.DataVisualization.Charting.Chart();
 			this.DatapointTabControlAnalysis = new System.Windows.Forms.TabPage();
+			this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
+			this.DateTimePickerTo = new System.Windows.Forms.DateTimePicker();
+			this.label9 = new System.Windows.Forms.Label();
+			this.label10 = new System.Windows.Forms.Label();
+			this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
+			this.AnalyseDatapointDescription = new System.Windows.Forms.Label();
+			this.AnalyseDatapointName = new System.Windows.Forms.Label();
+			this.ChartDatapointAnalyse = new System.Windows.Forms.DataVisualization.Charting.Chart();
+			this.panel1 = new System.Windows.Forms.Panel();
+			this.DateTimePickerFrom = new System.Windows.Forms.DateTimePicker();
 			this.DatapointTabControlSettings = new System.Windows.Forms.TabPage();
 			this.DatapointTabControl.SuspendLayout();
 			this.DatapointTabControlOverview.SuspendLayout();
 			this.tableLayoutPanel1.SuspendLayout();
 			this.tableLayoutPanel2.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.ChartDatapoint)).BeginInit();
+			this.DatapointTabControlAnalysis.SuspendLayout();
+			this.tableLayoutPanel3.SuspendLayout();
+			this.tableLayoutPanel4.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.ChartDatapointAnalyse)).BeginInit();
+			this.panel1.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// DatapointTabControl
@@ -65,6 +83,7 @@
 			this.DatapointTabControl.SelectedIndex = 0;
 			this.DatapointTabControl.Size = new System.Drawing.Size(484, 612);
 			this.DatapointTabControl.TabIndex = 0;
+			this.DatapointTabControl.SelectedIndexChanged += new System.EventHandler(this.DatapointTabControlSelectedIndexChanged);
 			this.DatapointTabControl.Resize += new System.EventHandler(this.DatapointTabControlResize);
 			// 
 			// DatapointTabControlOverview
@@ -319,52 +338,219 @@
 			// 
 			// ChartDatapoint
 			// 
-			chartArea1.AlignmentOrientation = ((System.Windows.Forms.DataVisualization.Charting.AreaAlignmentOrientations)((System.Windows.Forms.DataVisualization.Charting.AreaAlignmentOrientations.Vertical | System.Windows.Forms.DataVisualization.Charting.AreaAlignmentOrientations.Horizontal)));
-			chartArea1.AxisX.IntervalAutoMode = System.Windows.Forms.DataVisualization.Charting.IntervalAutoMode.VariableCount;
-			chartArea1.AxisX.MajorGrid.LineDashStyle = System.Windows.Forms.DataVisualization.Charting.ChartDashStyle.Dash;
-			chartArea1.AxisX.ScaleBreakStyle.Enabled = true;
-			chartArea1.AxisY.InterlacedColor = System.Drawing.Color.White;
-			chartArea1.AxisY.MajorGrid.LineDashStyle = System.Windows.Forms.DataVisualization.Charting.ChartDashStyle.Dash;
-			chartArea1.AxisY.MinorTickMark.Enabled = true;
-			chartArea1.InnerPlotPosition.Auto = false;
-			chartArea1.InnerPlotPosition.Height = 89F;
-			chartArea1.InnerPlotPosition.Width = 91F;
-			chartArea1.InnerPlotPosition.X = 7F;
-			chartArea1.InnerPlotPosition.Y = 4F;
-			chartArea1.Name = "ChartAreaDatapoint";
-			chartArea1.Position.Auto = false;
-			chartArea1.Position.Height = 100F;
-			chartArea1.Position.Width = 100F;
-			this.ChartDatapoint.ChartAreas.Add(chartArea1);
+			chartArea6.AlignmentOrientation = ((System.Windows.Forms.DataVisualization.Charting.AreaAlignmentOrientations)((System.Windows.Forms.DataVisualization.Charting.AreaAlignmentOrientations.Vertical | System.Windows.Forms.DataVisualization.Charting.AreaAlignmentOrientations.Horizontal)));
+			chartArea6.AxisX.IntervalAutoMode = System.Windows.Forms.DataVisualization.Charting.IntervalAutoMode.VariableCount;
+			chartArea6.AxisX.MajorGrid.LineDashStyle = System.Windows.Forms.DataVisualization.Charting.ChartDashStyle.Dash;
+			chartArea6.AxisX.ScaleBreakStyle.Enabled = true;
+			chartArea6.AxisY.InterlacedColor = System.Drawing.Color.White;
+			chartArea6.AxisY.MajorGrid.LineDashStyle = System.Windows.Forms.DataVisualization.Charting.ChartDashStyle.Dash;
+			chartArea6.AxisY.MinorTickMark.Enabled = true;
+			chartArea6.InnerPlotPosition.Auto = false;
+			chartArea6.InnerPlotPosition.Height = 89F;
+			chartArea6.InnerPlotPosition.Width = 91F;
+			chartArea6.InnerPlotPosition.X = 7F;
+			chartArea6.InnerPlotPosition.Y = 4F;
+			chartArea6.Name = "ChartAreaDatapoint";
+			chartArea6.Position.Auto = false;
+			chartArea6.Position.Height = 100F;
+			chartArea6.Position.Width = 100F;
+			this.ChartDatapoint.ChartAreas.Add(chartArea6);
 			this.tableLayoutPanel1.SetColumnSpan(this.ChartDatapoint, 2);
 			this.ChartDatapoint.Cursor = System.Windows.Forms.Cursors.Cross;
 			this.ChartDatapoint.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.ChartDatapoint.Location = new System.Drawing.Point(3, 243);
 			this.ChartDatapoint.Name = "ChartDatapoint";
-			series1.ChartArea = "ChartAreaDatapoint";
-			series1.Name = "Series1";
-			this.ChartDatapoint.Series.Add(series1);
+			series6.ChartArea = "ChartAreaDatapoint";
+			series6.Name = "Series1";
+			this.ChartDatapoint.Series.Add(series6);
 			this.ChartDatapoint.Size = new System.Drawing.Size(464, 334);
 			this.ChartDatapoint.TabIndex = 13;
 			this.ChartDatapoint.Text = "chart1";
-			title1.Name = "Title1";
-			this.ChartDatapoint.Titles.Add(title1);
+			title6.Name = "Title1";
+			this.ChartDatapoint.Titles.Add(title6);
 			// 
 			// DatapointTabControlAnalysis
 			// 
+			this.DatapointTabControlAnalysis.Controls.Add(this.tableLayoutPanel3);
 			this.DatapointTabControlAnalysis.Location = new System.Drawing.Point(4, 22);
 			this.DatapointTabControlAnalysis.Name = "DatapointTabControlAnalysis";
-			this.DatapointTabControlAnalysis.Size = new System.Drawing.Size(385, 360);
+			this.DatapointTabControlAnalysis.Padding = new System.Windows.Forms.Padding(3);
+			this.DatapointTabControlAnalysis.Size = new System.Drawing.Size(476, 586);
 			this.DatapointTabControlAnalysis.TabIndex = 2;
 			this.DatapointTabControlAnalysis.Text = "Datenpunk - Analyse";
 			this.DatapointTabControlAnalysis.UseVisualStyleBackColor = true;
+			// 
+			// tableLayoutPanel3
+			// 
+			this.tableLayoutPanel3.ColumnCount = 2;
+			this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 30F));
+			this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 70F));
+			this.tableLayoutPanel3.Controls.Add(this.DateTimePickerTo, 1, 2);
+			this.tableLayoutPanel3.Controls.Add(this.label9, 0, 1);
+			this.tableLayoutPanel3.Controls.Add(this.label10, 0, 2);
+			this.tableLayoutPanel3.Controls.Add(this.tableLayoutPanel4, 0, 0);
+			this.tableLayoutPanel3.Controls.Add(this.ChartDatapointAnalyse, 0, 3);
+			this.tableLayoutPanel3.Controls.Add(this.panel1, 1, 1);
+			this.tableLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.tableLayoutPanel3.Location = new System.Drawing.Point(3, 3);
+			this.tableLayoutPanel3.Name = "tableLayoutPanel3";
+			this.tableLayoutPanel3.RowCount = 4;
+			this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 60F));
+			this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
+			this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
+			this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
+			this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+			this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+			this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+			this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+			this.tableLayoutPanel3.Size = new System.Drawing.Size(470, 580);
+			this.tableLayoutPanel3.TabIndex = 1;
+			// 
+			// DateTimePickerTo
+			// 
+			this.DateTimePickerTo.CustomFormat = "dd.MM.yyyy HH:mm:ss";
+			this.DateTimePickerTo.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
+			this.DateTimePickerTo.Location = new System.Drawing.Point(144, 96);
+			this.DateTimePickerTo.Margin = new System.Windows.Forms.Padding(3, 6, 3, 3);
+			this.DateTimePickerTo.Name = "DateTimePickerTo";
+			this.DateTimePickerTo.Size = new System.Drawing.Size(200, 20);
+			this.DateTimePickerTo.TabIndex = 17;
+			this.DateTimePickerTo.ValueChanged += new System.EventHandler(this.DateTimePickerToValueChanged);
+			// 
+			// label9
+			// 
+			this.label9.AutoSize = true;
+			this.label9.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(238)))), ((int)(((byte)(238)))), ((int)(((byte)(238)))));
+			this.label9.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.label9.Location = new System.Drawing.Point(0, 60);
+			this.label9.Margin = new System.Windows.Forms.Padding(0);
+			this.label9.Name = "label9";
+			this.label9.Padding = new System.Windows.Forms.Padding(10, 0, 0, 0);
+			this.label9.Size = new System.Drawing.Size(141, 30);
+			this.label9.TabIndex = 0;
+			this.label9.Text = "Start";
+			this.label9.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			// 
+			// label10
+			// 
+			this.label10.AutoSize = true;
+			this.label10.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.label10.Location = new System.Drawing.Point(0, 90);
+			this.label10.Margin = new System.Windows.Forms.Padding(0);
+			this.label10.Name = "label10";
+			this.label10.Padding = new System.Windows.Forms.Padding(10, 0, 0, 0);
+			this.label10.Size = new System.Drawing.Size(141, 30);
+			this.label10.TabIndex = 1;
+			this.label10.Text = "Ende";
+			this.label10.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			// 
+			// tableLayoutPanel4
+			// 
+			this.tableLayoutPanel4.ColumnCount = 1;
+			this.tableLayoutPanel3.SetColumnSpan(this.tableLayoutPanel4, 2);
+			this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+			this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+			this.tableLayoutPanel4.Controls.Add(this.AnalyseDatapointDescription, 0, 1);
+			this.tableLayoutPanel4.Controls.Add(this.AnalyseDatapointName, 0, 0);
+			this.tableLayoutPanel4.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.tableLayoutPanel4.Location = new System.Drawing.Point(0, 0);
+			this.tableLayoutPanel4.Margin = new System.Windows.Forms.Padding(0);
+			this.tableLayoutPanel4.Name = "tableLayoutPanel4";
+			this.tableLayoutPanel4.RowCount = 2;
+			this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+			this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+			this.tableLayoutPanel4.Size = new System.Drawing.Size(470, 60);
+			this.tableLayoutPanel4.TabIndex = 10;
+			// 
+			// AnalyseDatapointDescription
+			// 
+			this.AnalyseDatapointDescription.AutoSize = true;
+			this.AnalyseDatapointDescription.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.AnalyseDatapointDescription.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.AnalyseDatapointDescription.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(111)))), ((int)(((byte)(111)))), ((int)(((byte)(111)))));
+			this.AnalyseDatapointDescription.Location = new System.Drawing.Point(0, 30);
+			this.AnalyseDatapointDescription.Margin = new System.Windows.Forms.Padding(0);
+			this.AnalyseDatapointDescription.Name = "AnalyseDatapointDescription";
+			this.AnalyseDatapointDescription.Padding = new System.Windows.Forms.Padding(10, 0, 0, 0);
+			this.AnalyseDatapointDescription.Size = new System.Drawing.Size(470, 30);
+			this.AnalyseDatapointDescription.TabIndex = 0;
+			this.AnalyseDatapointDescription.Text = "-";
+			this.AnalyseDatapointDescription.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			// 
+			// AnalyseDatapointName
+			// 
+			this.AnalyseDatapointName.AutoSize = true;
+			this.AnalyseDatapointName.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.AnalyseDatapointName.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.AnalyseDatapointName.Location = new System.Drawing.Point(0, 0);
+			this.AnalyseDatapointName.Margin = new System.Windows.Forms.Padding(0);
+			this.AnalyseDatapointName.Name = "AnalyseDatapointName";
+			this.AnalyseDatapointName.Padding = new System.Windows.Forms.Padding(8, 0, 0, 0);
+			this.AnalyseDatapointName.Size = new System.Drawing.Size(470, 30);
+			this.AnalyseDatapointName.TabIndex = 1;
+			this.AnalyseDatapointName.Text = "-";
+			this.AnalyseDatapointName.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			// 
+			// ChartDatapointAnalyse
+			// 
+			chartArea5.AlignmentOrientation = ((System.Windows.Forms.DataVisualization.Charting.AreaAlignmentOrientations)((System.Windows.Forms.DataVisualization.Charting.AreaAlignmentOrientations.Vertical | System.Windows.Forms.DataVisualization.Charting.AreaAlignmentOrientations.Horizontal)));
+			chartArea5.AxisX.IntervalAutoMode = System.Windows.Forms.DataVisualization.Charting.IntervalAutoMode.VariableCount;
+			chartArea5.AxisX.MajorGrid.LineDashStyle = System.Windows.Forms.DataVisualization.Charting.ChartDashStyle.Dash;
+			chartArea5.AxisX.ScaleBreakStyle.Enabled = true;
+			chartArea5.AxisY.InterlacedColor = System.Drawing.Color.White;
+			chartArea5.AxisY.MajorGrid.LineDashStyle = System.Windows.Forms.DataVisualization.Charting.ChartDashStyle.Dash;
+			chartArea5.AxisY.MinorTickMark.Enabled = true;
+			chartArea5.InnerPlotPosition.Auto = false;
+			chartArea5.InnerPlotPosition.Height = 89F;
+			chartArea5.InnerPlotPosition.Width = 91F;
+			chartArea5.InnerPlotPosition.X = 7F;
+			chartArea5.InnerPlotPosition.Y = 4F;
+			chartArea5.Name = "ChartAreaDatapoint";
+			chartArea5.Position.Auto = false;
+			chartArea5.Position.Height = 100F;
+			chartArea5.Position.Width = 100F;
+			this.ChartDatapointAnalyse.ChartAreas.Add(chartArea5);
+			this.tableLayoutPanel3.SetColumnSpan(this.ChartDatapointAnalyse, 2);
+			this.ChartDatapointAnalyse.Cursor = System.Windows.Forms.Cursors.Cross;
+			this.ChartDatapointAnalyse.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.ChartDatapointAnalyse.Location = new System.Drawing.Point(3, 123);
+			this.ChartDatapointAnalyse.Name = "ChartDatapointAnalyse";
+			series5.ChartArea = "ChartAreaDatapoint";
+			series5.Name = "Series1";
+			this.ChartDatapointAnalyse.Series.Add(series5);
+			this.ChartDatapointAnalyse.Size = new System.Drawing.Size(464, 454);
+			this.ChartDatapointAnalyse.TabIndex = 13;
+			this.ChartDatapointAnalyse.Text = "chart1";
+			title5.Name = "Title1";
+			this.ChartDatapointAnalyse.Titles.Add(title5);
+			// 
+			// panel1
+			// 
+			this.panel1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(238)))), ((int)(((byte)(238)))), ((int)(((byte)(238)))));
+			this.panel1.Controls.Add(this.DateTimePickerFrom);
+			this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.panel1.Location = new System.Drawing.Point(141, 60);
+			this.panel1.Margin = new System.Windows.Forms.Padding(0);
+			this.panel1.Name = "panel1";
+			this.panel1.Size = new System.Drawing.Size(329, 30);
+			this.panel1.TabIndex = 16;
+			// 
+			// DateTimePickerFrom
+			// 
+			this.DateTimePickerFrom.CustomFormat = "dd.MM.yyyy HH:mm:ss";
+			this.DateTimePickerFrom.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
+			this.DateTimePickerFrom.Location = new System.Drawing.Point(3, 5);
+			this.DateTimePickerFrom.Name = "DateTimePickerFrom";
+			this.DateTimePickerFrom.Size = new System.Drawing.Size(200, 20);
+			this.DateTimePickerFrom.TabIndex = 15;
+			this.DateTimePickerFrom.ValueChanged += new System.EventHandler(this.DateTimePickerFromValueChanged);
 			// 
 			// DatapointTabControlSettings
 			// 
 			this.DatapointTabControlSettings.Location = new System.Drawing.Point(4, 22);
 			this.DatapointTabControlSettings.Name = "DatapointTabControlSettings";
 			this.DatapointTabControlSettings.Padding = new System.Windows.Forms.Padding(3);
-			this.DatapointTabControlSettings.Size = new System.Drawing.Size(385, 360);
+			this.DatapointTabControlSettings.Size = new System.Drawing.Size(476, 586);
 			this.DatapointTabControlSettings.TabIndex = 1;
 			this.DatapointTabControlSettings.Text = "Datenpunk - Eigenschaften";
 			this.DatapointTabControlSettings.UseVisualStyleBackColor = true;
@@ -383,6 +569,13 @@
 			this.tableLayoutPanel2.ResumeLayout(false);
 			this.tableLayoutPanel2.PerformLayout();
 			((System.ComponentModel.ISupportInitialize)(this.ChartDatapoint)).EndInit();
+			this.DatapointTabControlAnalysis.ResumeLayout(false);
+			this.tableLayoutPanel3.ResumeLayout(false);
+			this.tableLayoutPanel3.PerformLayout();
+			this.tableLayoutPanel4.ResumeLayout(false);
+			this.tableLayoutPanel4.PerformLayout();
+			((System.ComponentModel.ISupportInitialize)(this.ChartDatapointAnalyse)).EndInit();
+			this.panel1.ResumeLayout(false);
 			this.ResumeLayout(false);
 
 		}
@@ -410,6 +603,16 @@
 		private System.Windows.Forms.Label LabelDatapointLastValue;
 		private System.Windows.Forms.Label label3;
 		private System.Windows.Forms.DataVisualization.Charting.Chart ChartDatapoint;
+		private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
+		private System.Windows.Forms.Label label9;
+		private System.Windows.Forms.Label label10;
+		private System.Windows.Forms.TableLayoutPanel tableLayoutPanel4;
+		private System.Windows.Forms.Label AnalyseDatapointDescription;
+		private System.Windows.Forms.Label AnalyseDatapointName;
+		private System.Windows.Forms.DataVisualization.Charting.Chart ChartDatapointAnalyse;
+		private System.Windows.Forms.DateTimePicker DateTimePickerTo;
+		private System.Windows.Forms.Panel panel1;
+		private System.Windows.Forms.DateTimePicker DateTimePickerFrom;
 
 	}
 }
