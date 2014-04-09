@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Gsmgh.Alm.Database;
 using Gsmgh.Alm.Model;
 using System.Net;
+using System.Configuration;
 
 namespace ALM_Example_Data {
 	class Program {
@@ -15,10 +16,20 @@ namespace ALM_Example_Data {
 
 		static void Main ( string[] args ) {
 
+			String DatabaseType = ConfigurationManager.AppSettings[ "DatabaseConnector" ];
+			String DatabaseName = ConfigurationManager.AppSettings[ "DatabaseName" ];
+			String DatabaseServer = ConfigurationManager.AppSettings[ "DatabaseServer" ];
+			String DatabaseUsername = ConfigurationManager.AppSettings[ "DatabaseUsername" ];
+			String DatabasePassword = ConfigurationManager.AppSettings[ "DatabasePassword" ];
+
+			// Create a DatabaseFacade instance
 			Database = new DatabaseFacade();
-			Database.SetDatabaseConnector(
-				new MySQLConnector( "SERVER=localhost;DATABASE=seminarkurs2014;UID=root;PASSWORD=root;" )
-			);
+			if( DatabaseType.Equals( "MYSQL" ) ) {
+				// Tell the DatabseFacade to use the MySQLConnector
+				Database.SetDatabaseConnector(
+					new MySQLConnector( String.Format( "SERVER={0};DATABASE={1};UID={2};PASSWORD={3};" , DatabaseServer , DatabaseName , DatabaseUsername , DatabasePassword ) )
+				);
+			}
 
 			Console.ForegroundColor = ConsoleColor.White;
 			Console.WriteLine( "ALM Example Data Application" );

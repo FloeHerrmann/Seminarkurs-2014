@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using Gsmgh.Alm.Database;
 using Gsmgh.Alm.Model;
 using ALM_Interface.UserControls;
+using System.Configuration;
 
 namespace ALM_Interface {
 	public partial class mainWindow : Form {
@@ -37,13 +38,20 @@ namespace ALM_Interface {
 
 			NodeTreeView.ImageList = nodeTreeImageList;
 
+			String DatabaseType = ConfigurationManager.AppSettings[ "DatabaseConnector" ];
+			String DatabaseName = ConfigurationManager.AppSettings[ "DatabaseName" ];
+			String DatabaseServer = ConfigurationManager.AppSettings[ "DatabaseServer" ];
+			String DatabaseUsername = ConfigurationManager.AppSettings[ "DatabaseUsername" ];
+			String DatabasePassword = ConfigurationManager.AppSettings[ "DatabasePassword" ];
+
 			// Create a DatabaseFacade instance
 			this.database = new DatabaseFacade();
-
-			// Tell the DatabseFacade to use the MySQLConnector
-			this.database.SetDatabaseConnector(
-				new MySQLConnector( "SERVER=localhost;DATABASE=seminarkurs2014;UID=root;PASSWORD=root;" )
-			);
+			if( DatabaseType.Equals( "MYSQL" ) ) {
+				// Tell the DatabseFacade to use the MySQLConnector
+				this.database.SetDatabaseConnector(
+					new MySQLConnector( String.Format( "SERVER={0};DATABASE={1};UID={2};PASSWORD={3};" , DatabaseServer , DatabaseName , DatabaseUsername , DatabasePassword ) )
+				);
+			}
 
 			// Open a connection to the datbase
 			this.database.OpenConnection();

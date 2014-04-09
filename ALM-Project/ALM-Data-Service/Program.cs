@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using log4net;
 using System.Net.NetworkInformation;
+using System.Configuration;
 
 namespace ALM_Data_Service {
 	class Program {
@@ -21,11 +22,20 @@ namespace ALM_Data_Service {
 		static void Main ( string[] args ) {
 			log4net.Config.XmlConfigurator.Configure();
 
-			Database = new DatabaseFacade();
-			Database.SetDatabaseConnector(
-				new MySQLConnector( "SERVER=localhost;DATABASE=seminarkurs2014;UID=root;PASSWORD=root;" )
-			);
+			String DatabaseType = ConfigurationManager.AppSettings[ "DatabaseConnector" ];
+			String DatabaseName = ConfigurationManager.AppSettings[ "DatabaseName" ];
+			String DatabaseServer = ConfigurationManager.AppSettings[ "DatabaseServer" ];
+			String DatabaseUsername = ConfigurationManager.AppSettings[ "DatabaseUsername" ];
+			String DatabasePassword = ConfigurationManager.AppSettings[ "DatabasePassword" ];
 
+			Database = new DatabaseFacade();
+			if( DatabaseType.Equals( "MYSQL" ) ) {
+				// Tell the DatabseFacade to use the MySQLConnector
+				Database.SetDatabaseConnector(
+					new MySQLConnector( String.Format( "SERVER={0};DATABASE={1};UID={2};PASSWORD={3};" , DatabaseServer , DatabaseName , DatabaseUsername , DatabasePassword ) )
+				);
+			}
+			
 			Logger.Info( String.Format( "Getting Data for all active devices" ) );
 			if( OpenConnection() ) {
 				Logger.Debug( "Database Connection Established" );
