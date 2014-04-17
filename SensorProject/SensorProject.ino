@@ -48,7 +48,7 @@ uchar numbers[10][16] = {
 #define ColorPurple 0x826F
 
 #define MaximumTotalLoudness 1023
-#define MaximumTotalCO2Cocentration 3000
+#define MaximumTotalCO2Cocentration 5000
 
 // Data for display
 
@@ -308,13 +308,9 @@ void processCommand( String command , YunClient client ) {
 		processGetTresholdCommand( true , false , client );
 	} else if( command.indexOf( "C:Threshold:Set:Loudness:" ) != -1 ) {
 		processSetTresholdCommand( false , true , command.substring( command.lastIndexOf( ":" ) + 1 , command.lastIndexOf( ";" ) ) , client );
-		client.flush();
-		client.stop();
 		updateDisplay();
 	} else if( command.indexOf( "C:Threshold:Set:CO2Concentration:" ) != -1 ) {
 		processSetTresholdCommand( true , false , command.substring( command.lastIndexOf( ":" ) + 1 , command.lastIndexOf( ";" ) ) , client );
-		client.flush();
-		client.stop();
 		updateDisplay();
 	} else {
 		client.println( "{\"State\":\"Unknown Command\"}" );
@@ -356,8 +352,7 @@ void processGetTresholdCommand( bool CO2 , bool Loudness , YunClient client ) {
 		client.print( TresholdCO2Concentration );
 		client.print( "\"" );
 		if( Loudness == true ) client.print( "," );
-	}
-	if( Loudness == true ) {
+	} else if( Loudness == true ) {
 		client.print( "\"LoudnessTreshold\":\"" );
 		client.print( TresholdLoudness );
 		client.print( "\"" );
@@ -371,17 +366,25 @@ void processGetTresholdCommand( bool CO2 , bool Loudness , YunClient client ) {
 void processSetTresholdCommand( bool CO2 , bool Loudness , String value , YunClient client ) {
 	WatchdogReset();
 	int intValue = value.toInt();
+	client.print( "{" );
 	if( CO2 == true ) {
 	 	TresholdCO2Concentration = intValue;
 	 	MaximumCO2BarHeight = ((float)TresholdCO2Concentration/(float)MaximumTotalCO2Cocentration) * BarHeight;
 	 	EepromWriteInt( CO2Cell , TresholdCO2Concentration );
-	}
-	if( Loudness == true ) {
+	 	client.print( "\"CO2Treshold\":\"" );
+		client.print( TresholdCO2Concentration );
+		client.print( "\"" );
+	} else if( Loudness == true ) {
 		TresholdLoudness = intValue;
 		MaximumLoudnessBarHeight = ((float)TresholdLoudness/(float)MaximumTotalLoudness) * BarHeight;
 		EepromWriteInt( LoudnessCell , TresholdLoudness );
+		client.print( "\"LoudnessTreshold\":\"" );
+		client.print( TresholdLoudness );
+		client.print( "\"" );
 	}
-	processGetTresholdCommand( CO2 , Loudness , client );
+	client.println( "}" );
+	client.flush();
+	client.stop();
 }
 
 void drawProgressBar( unsigned char percentage ) {
