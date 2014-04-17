@@ -21,16 +21,16 @@
 #define SCREEN_MAX_Y 319
 
 uchar numbers[10][16] = {
-	{8,10, 60,126,102,195,195,195,195,195,195,195,102,126,60},
-	{5,7,  24,248,248,24,24,24,24,24,24,24,24,24,24},
-	{8,10, 60,254,195,3,7,14,28,56,112,224,192,255,255},
-	{8,10, 62,127,195,195,6,28,30,7,3,195,199,126,60},
-	{8,10, 6,14,30,54,102,198,198,255,255,6,6,6,6,6},
-	{8,10, 254,254,192,192,252,254,199,3,3,195,199,254,124},
-	{8,10, 60,127,99,192,192,220,254,195,195,195,227,126,60},
-	{8,10, 255,255,3,6,12,12,24,24,48,48,96,96,96},
-	{8,10, 60,126,231,195,195,102,126,231,195,195,231,126,60},
-	{8,10, 60,126,199,195,195,195,127,59,3,3,198,254,124},
+	{8,10, 60,126,102,195,195,195,195,195,195,195,102,126,60}, // 0
+	{5,7,  24,248,248,24,24,24,24,24,24,24,24,24,24}, // 1
+	{8,10, 60,254,195,3,7,14,28,56,112,224,192,255,255}, // 2
+	{8,10, 62,127,195,195,6,28,30,7,3,195,199,126,60}, // 3
+	{8,10, 6,14,30,54,102,198,198,255,255,6,6,6,6,6}, // 4
+	{8,10, 254,254,192,192,252,254,199,3,3,195,199,254,124}, // 5
+	{8,10, 60,127,99,192,192,220,254,195,195,195,227,126,60}, // 6
+	{8,10, 255,255,3,6,12,12,24,24,48,48,96,96,96}, // 7
+	{8,10, 60,126,231,195,195,102,126,231,195,195,231,126,60}, // 8
+	{8,10, 60,126,199,195,195,195,127,59,3,3,198,254,124}, // 9
 };
 
 // Define Colors
@@ -91,9 +91,6 @@ float CurrentTemperature;
 
 // Server for incoming connections
 YunServer Server( 10001 );
-
-// Object to access the display
-// TouchScreen Display = TouchScreen( );
 
 // Object to access the CO2 sensor
 SoftwareSerial CO2Sensor( CO2SensorRx , CO2SensorTx );
@@ -286,7 +283,7 @@ void drawBar( uint x , uint y , uint MaxBarHeight , uint Threshold , uint Value 
 // Processing the received command
 void processCommand( String command , YunClient client ) {
 	WatchdogReset();
-	if( command == "C:Data:Get;" ) {
+	if( command.equals( "C:Data:Get;" ) ) {
 		processDataCommand( true , true , true , client );
 	} else if( command.equals( "C:Data:Get:CO2Concentration;" ) ) {
 		processDataCommand( true , false , false , client );
@@ -310,13 +307,11 @@ void processCommand( String command , YunClient client ) {
 	} else if( command.equals( "C:Threshold:Get:CO2Concentration;" ) ) {
 		processGetTresholdCommand( true , false , client );
 	} else if( command.indexOf( "C:Threshold:Set:Loudness:" ) != -1 ) {
-		client.println( "Set Threshold" );
 		processSetTresholdCommand( false , true , command.substring( command.lastIndexOf( ":" ) + 1 , command.lastIndexOf( ";" ) ) , client );
 		client.flush();
 		client.stop();
 		updateDisplay();
 	} else if( command.indexOf( "C:Threshold:Set:CO2Concentration:" ) != -1 ) {
-		client.println( "Set Threshold" );
 		processSetTresholdCommand( true , false , command.substring( command.lastIndexOf( ":" ) + 1 , command.lastIndexOf( ";" ) ) , client );
 		client.flush();
 		client.stop();
@@ -414,11 +409,11 @@ int getLoudness(){
 }
 
 // Get the current CO2 Concentration
-int getCO2Concentration(){
+int getCO2Concentration(  ){
 	int RetryCounter = 0;
 	while( CO2Sensor.available() == 0 ) {
 		CO2Sensor.write( CO2SensorRead , 7 );
-		if( RetryCounter++ > 20 ) return 1200;//return -800;
+		if( RetryCounter++ > 20 ) return CurrentCO2Concentration;
 		delay( 50 );
 	}
 
@@ -439,11 +434,10 @@ int getCO2Concentration(){
 		if( CO2Value > MaximumTotalCO2Cocentration ) return (int)MaximumTotalCO2Cocentration;
 		return CO2Value;
 	} else {
-		long CO2Value = -900;
 		while( CO2Sensor.available() > 0 ) {
-			CO2Value--;
 			CO2Sensor.read();
 		}
+		return CurrentCO2Concentration;
 	}
 }
 
@@ -452,14 +446,14 @@ void EepromWriteInt( int address , int value ) {
 	if( value != currentValue ) {
 		byte lowByte = ((value >> 0) & 0xFF);
 		byte highByte = ((value >> 8) & 0xFF);
-		eeprom_write_byte((unsigned char *) address, lowByte);
-		eeprom_write_byte((unsigned char *) address, highByte);
+		eeprom_write_byte((unsigned char *) address , lowByte );
+		eeprom_write_byte((unsigned char *) address + 1, highByte );
 	}
 }
 
 unsigned int EepromReadInt( int address ) {
-	byte lowByte = eeprom_read_byte((unsigned char *) address);
-	byte highByte = eeprom_read_byte((unsigned char *) address);
+	byte lowByte = eeprom_read_byte( (unsigned char *) address );
+	byte highByte = eeprom_read_byte( (unsigned char *) address + 1 );
 	return ((lowByte << 0) & 0xFF) + ((highByte << 8) & 0xFF00);
 }
 
